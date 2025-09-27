@@ -1,353 +1,976 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>My awesome portfolio</title>
-    <link href="https://fonts.googleapis.com/css?family=Poppins:400,600&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css" />
-    <link rel="stylesheet" href="./css/style.css">
+    <title>Purvi Verma // The Researcher's Observatory</title>
+    <!-- Inter for Interface Clarity, Crimson Text for Academic Weight -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;500;700;900&family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --bg-dark: #0A192F; /* Deep Night Blue (Observatory Sky) */
+            --primary-surface: #112240; /* Slightly Lighter Module Surface */
+            --accent-teal: #64FFDA; /* Neon/Cyan Glow */
+            --accent-violet: #C77AD6; /* Orbital/Discovery Color */
+            --text-light: #CCD6F6; /* Main Text */
+            --text-dim: #8892B0; /* Subtext */
+            --font-serif: 'Crimson Text', serif;
+            --font-sans: 'Inter', sans-serif;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            scroll-behavior: smooth;
+        }
+
+        .crimson { font-family: var(--font-serif); }
+        .text-teal-accent { color: var(--accent-teal); }
+
+        /* General UI Styling */
+        .section-padding { padding: 100px 0; }
+        .module-card {
+            background-color: var(--primary-surface);
+            border: 1px solid rgba(100, 255, 218, 0.1);
+            transition: all 0.3s ease;
+        }
+        .module-card:hover {
+            box-shadow: 0 0 20px rgba(100, 255, 218, 0.2);
+            transform: translateY(-5px);
+        }
+
+        /* HEADER */
+        .header-glow {
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5), 0 0 10px rgba(100, 255, 218, 0.1);
+            backdrop-filter: blur(10px);
+            background-color: rgba(10, 25, 47, 0.95);
+        }
+        .nav-link:hover { color: var(--accent-teal) !important; }
+        .cta-button {
+            border: 1px solid var(--accent-teal);
+            color: var(--accent-teal) !important;
+            background: transparent;
+            transition: all 0.3s ease;
+        }
+        .cta-button:hover { background-color: rgba(100, 255, 218, 0.1); }
+
+        /* Scroll Reveal (Standard Fade-Up) */
+        .hidden-scroll { opacity: 0; transform: translateY(30px); transition: all 1s ease-out; }
+        .hidden-scroll.visible { opacity: 1; transform: translateY(0); }
+
+        /* Timeline Specific Styling */
+        .timeline-container {
+            grid-template-columns: 1fr 2px 1fr; /* 3-column layout: Left Content | Line | Right Content */
+        }
+        .timeline-line {
+            grid-column: 2 / 3;
+            background-color: var(--text-dim);
+            width: 2px;
+            position: absolute;
+            height: 100%;
+            left: 50%;
+            transform: translateX(-1px);
+        }
+        .timeline-marker {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            border: 3px solid var(--bg-dark); /* Ensure marker is visible over the line */
+            background-color: var(--text-light);
+            z-index: 1;
+            /* Positioning for 3-column grid */
+            grid-column: 2 / 3;
+            margin: auto;
+        }
+        /* Left content positioning */
+        .timeline-container > .flex-row-reverse > .module-card {
+            grid-column: 1 / 2;
+            margin-right: 1.5rem; /* Space between card and line */
+        }
+        /* Right content positioning */
+        .timeline-container > .flex:not(.flex-row-reverse) > .module-card {
+            grid-column: 3 / 4;
+            margin-left: 1.5rem; /* Space between card and line */
+        }
+        /* Mobile View (Stacking) */
+        @media (max-width: 767px) {
+            .timeline-container {
+                grid-template-columns: 10px 1fr; /* 2-column layout: Line | Content */
+            }
+            .timeline-line {
+                left: 5px; /* Move line to the far left */
+                transform: none;
+            }
+            .timeline-marker {
+                grid-column: 1 / 2;
+                margin-left: -5px; /* Align marker on the line */
+            }
+            /* All cards go to the right of the line */
+            .timeline-container > div > .module-card {
+                grid-column: 2 / 3;
+                margin-left: 2rem;
+                margin-right: 0;
+            }
+            /* Remove reverse column ordering for mobile stacking */
+            .timeline-container > .flex-row-reverse {
+                flex-direction: row;
+            }
+        }
+.helix-node {
+  position: absolute;
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  background: rgba(100,255,218,0.15);
+  border: 2px solid rgba(100,255,218,0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+}
+
+.helix-node:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 25px rgba(100,255,218,0.6);
+}
+
+.helix-node span {
+  color: #64FFDA;
+  font-weight: 600;
+  text-align: center;
+  font-size: 0.9rem;
+  padding: 0 6px;
+}
+
+.project-link {
+  color: #64FFDA;
+  font-weight: 500;
+  transition: color 0.3s;
+}
+.project-link:hover {
+  color: #00e6b8;
+}
+
+
+        /* Skill Galaxy Specific Styles */
+        #galaxy-container {
+            position: relative;
+            width: 100%;
+            height: 700px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden; 
+            transition: all 0.5s ease; 
+        }
+        
+        /* New CSS for shifting all internal galaxy elements */
+        #galaxy-container.shifted > .sun,
+        #galaxy-container.shifted > .planet {
+            transition: transform 0.5s ease;
+            transform: translateX(-180px); /* Shift planets and sun left */
+        }
+        #galaxy-container.shifted #galaxy-canvas {
+            transition: transform 0.5s ease;
+            transform: translateX(-180px); /* Shift canvas content left */
+        }
+        /* End New CSS */
+        
+        #galaxy-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+
+        /* Sun (Core) Style - INCREASED SIZE TO 140PX */
+        .sun {
+            position: absolute;
+            background: radial-gradient(circle, #FFD700 0%, #FFA500 70%, #C77AD6 100%);
+            width: 140px; 
+            height: 140px; 
+            border-radius: 50%;
+            box-shadow: 0 0 50px rgba(255, 165, 0, 0.8), 0 0 100px rgba(255, 215, 0, 0.4);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            font-weight: 700;
+            z-index: 10;
+            color: var(--bg-dark);
+            text-shadow: 0 0 5px white;
+            cursor: default;
+        }
+        .sun span { 
+            font-size: 1.5rem; 
+            line-height: 1.2; 
+        }
+
+        /* Node/Planet Style (Rendered via JS, but good for context) */
+        .planet {
+            position: absolute;
+            border-radius: 50%;
+            box-shadow: 0 0 15px rgba(100, 255, 218, 0.5);
+            transition: transform 0.1s ease;
+            cursor: pointer;
+            z-index: 5;
+        }
+        .planet:hover {
+            transform: scale(1.2);
+            box-shadow: 0 0 25px var(--accent-teal);
+        }
+
+        /* Modal Panel */
+        #skill-detail-panel {
+            position: absolute;
+            top: 50%;
+            right: 2%;
+            transform: translateY(-50%);
+            width: 350px;
+            min-height: 400px;
+            background-color: var(--primary-surface);
+            border: 1px solid var(--accent-teal);
+            box-shadow: 0 0 30px rgba(100, 255, 218, 0.1);
+            z-index: 20;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.5s ease, transform 0.5s ease;
+            transform: translateY(-50%) translateX(100%);
+        }
+        #skill-detail-panel.visible {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(-50%) translateX(0);
+        }
+
+        @media (max-width: 1024px) {
+            #galaxy-container { height: 500px; }
+            #skill-detail-panel {
+                position: relative;
+                top: auto;
+                right: auto;
+                transform: none;
+                width: 90%;
+                margin: 20px auto;
+                opacity: 1;
+                visibility: visible;
+                min-height: auto;
+            }
+            #skill-detail-panel.visible { transform: none; }
+            /* Disable shifting on small screens since the panel is already below the galaxy */
+            #galaxy-container.shifted > .sun,
+            #galaxy-container.shifted > .planet,
+            #galaxy-container.shifted #galaxy-canvas {
+                transform: translateX(0);
+                transition: none;
+            }
+        }
+    </style>
 </head>
+<body class="selection:bg-teal-700 selection:text-white">
 
-<body>
-    <div class="site-main-wrapper">
-        <button class="hamberger">
-            <img src="./images/hamberger.svg" alt="">
-        </button>
-
-        <div class="mobile-nav">
-            <button class="times"><img src="./images/times.svg" alt=""></button>
-            <ul>
-                <li><a href="#">Home</a></li>
-                <li><a href="#">About</a></li>
-                <li><a href="#">Experience</a></li>
-                <li><a href="#">Projects</a></li>
-                <li><a href="#">Licenses</a></li>
-            </ul>
+    <!-- 0. Header (Architectural Bar) -->
+    <header id="navbar" class="sticky top-0 z-50 header-glow">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <a href="#hero" class="text-xl font-bold text-light flex items-center">
+                <i class="fas fa-satellite-dish text-teal-accent mr-3"></i> Purvi Verma 
+            </a>
+            <nav class="flex space-x-6">
+                <a href="#skill-galaxy" class="nav-link text-sm text-text-dim hover:text-teal-accent transition-colors">Skill Galaxy</a>
+                <a href="#timeline" class="nav-link text-sm text-text-dim hover:text-teal-accent transition-colors">Discoveries</a>
+                <a href="#certifications" class="nav-link text-sm text-text-dim hover:text-teal-accent transition-colors">Certifications</a>
+                <a href="#projects" class="nav-link text-sm text-text-dim hover:text-teal-accent transition-colors">Personal Projects</a>
+                <a href="CV_Purvi_PhD.pdf" target="_blank" class="cta-button text-xs font-semibold px-3 py-1 rounded-sm tracking-widest">FULL CV</a>
+            </nav>
         </div>
-        <header>
-            <div class="container">
-                <nav id="main-nav" class="flex items-center justify-between">
-                    <div class="left flex items-center">
-                        <div class="branding">
-                            <img src="./images/images.jpg" alt="" width="75" 
-                            height="75">
-                        </div>
-                        <div>
-                            <a href="#">Home</a>
-                            <a href="#about">About</a>
-                            <a href="#experience">Experience</a>
-                            <a href="#Projects">Projects</a>
-                            <a href="#Licenses">Licenses</a>
-                        </div>
-                    </div>
-                    <div class="right">
-                        <a href="#contact"> <button class="btn btn-primary">Contact</button></a>
-                    </div>
-                </nav>
-                <div class="hero flex items-center justify-between">
-                    <div class="left flex-1 flex justify-center">
-                        <img src="./images/PURVI2.jpg" alt="">
-                    </div>
-                    <div class="right flex-1">
-                        <h6>Purvi Verma</h6>
-                        <h1>I’m a Tech <span>Enthusiast</span></h1>
-                        <p>Fourth-year undergraduate pursuing B.Tech. course at IIT Bhubaneshwar. 
-                            
-                        </p>
-                        <div>
-                            <button class="btn btn-secondary" type="submit" onclick="window.open('./Resume_PurviVerma.pdf')">DOWNLOAD CV</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </header>
+    </header>
 
-        <section id="about" class="about">
-            <div class="container flex items-center about-inner-wrap">
-                <div class="flex-1">
-                    <img class="about-me-img" src="./images/PURVI.jpg" alt="">
-                </div>
-                <div class="flex-1 right">
-                    <h1>About <span>Me</span></h1>
-                    <h3>Hello! i’m Purvi Verma.</h3>
-                    <p>My main interest is Machine Learning Applications in real-world problems. 
-                        I am proficient in various Python packages such as NumPy, pandas, matplotlib, BeautifulSoup, Praw, snscrape, sklearn, OpenCV, PyTorch, and TensorFlow. These tools empower me to work with data efficiently and develop machine learning models. Moreover, I possess a solid understanding of Natural Language Processing (NLP) fundamentals, allowing me to analyze and process textual data effectively.</p>
-                        <p>Furthermore, I have a strong background in front-end development, particularly in HTML, CSS, and JavaScript. This expertise enables me to create visually appealing and interactive user interfaces, enhancing the overall user experience.
-                        </p>
-                        <p>Additionally, I have knowledge about Qiskit, the software development kit for quantum computing. Quantum computing is an emerging and exciting field, and my familiarity with Qiskit reflects my eagerness to explore advanced technologies and their potential applications.</p>
-                    <div class="social">
-        
-                        <a href="https://instagram.com/_.purvi_verma._?igshid=YzgyMTM2MGM="><img src="./images/instagram.webp" alt=""></a>
-                        <a href="https://www.linkedin.com/in/purvi-verma-3a553a23b"> <img src="./images/linkdin.png" alt=""></a>
-                        <a href="https://leetcode.com/20ce01050/"> <img src="./images/leetcode.png" alt=""></a>
-                        <a href="https://github.com/purvi150"> <img src="./images/github.png" alt=""></a>
-                    </div>
-                </div>
+    <!-- 1. HERO (The Initial View) -->
+    <section id="hero" class="hero-module section-padding pt-40 pb-24 text-center">
+        <div class="container mx-auto px-4">
+            <!-- Profile Picture Placeholder -->
+            <div class="flex justify-center mb-8">
+                <!-- IMPORTANT: Replace the 'src' attribute below with the URL of your profile picture -->
+                <img
+                    src="/Users/purviverma/Documents/Speech_Emotion_Detection/PurviVerma/image.jpeg"
+                    alt="Purvi Verma Profile Picture"
+                    class="w-36 h-36 rounded-full object-cover border-4 border-teal-accent shadow-xl shadow-teal-700/30 transition-all hover:scale-105"
+                    onerror="this.onerror=null; this.src='https://drive.google.com/file/d/1VU-QUccaVPQjJvyytfMrL3AscdRHU6eZ/view?usp=sharing';"
+                >
             </div>
-        </section>
-        <section class="intern"><a href="https://cssbattle.dev/player/y4kJOvR9ItdfPHBy2RzoNoWZOmq2">
-            <div></div>
-            <div class="div_">
-                <div class="eye" id="a"></div>
-                <div class="eye" id="b"></div>
-            </div>
-            <div class="div2" id="rect"></div>
-            <div class="div3"></div>
-            <div class="div4"></div>
-            <div class="div5"></div>
-            <div class="div6"></div>
-            <style>
 
-                .intern {
-                    width: 1465px;
-                    height: 180px;
-                    background: linear-gradient(rgba(13, 0, 83, 0.7), rgba(13, 0, 83, 0.7)), url(../images/ba.jpg);
-                }
-                
-                .div_ {
-                    width: 150px;
-                    height: 150px;
-                    border-radius: 50%;
-                    background: #FFFFFF;
-                    position: absolute;
-                    transform: translate(680px, 15px);
-                }
-                
-                .eye {
-                    width: 20px;
-                    height: 20px;
-                    position: absolute;
-                    border-radius: 50%;
-                    background: #0E1F2B;
-                    transform: translate(40px, 40px);
-                }
-                
-                #b {
-                    transform: translate(90px, 40px);
-                }
-                
-                .div3 {
-                    width: 140px;
-                    height: 21px;
-                    border-radius: 10px;
-                    background: #FFA63F;
-                    position: absolute;
-                    transform: translate(685px, 145px);
-                }
-                
-                .div4 {
-                    width: 140px;
-                    height: 15px;
-                    position: absolute;
-                    background: #0E1F2B;
-                    transform: translate(680px, 5px);
-                }
-                
-                .div5 {
-                    width: 100px;
-                    height: 90px;
-                    position: absolute;
-                    background: #0E1F2B;
-                    transform: translate(700px, -80px);
-                }
-                
-                .div6 {
-                    width: 100px;
-                    height: 20px;
-                    position: absolute;
-                    background: #FFFFFF;
-                    transform: translate(700px, -50px);
-                }
-            </style></a>
-        </section>
-        
-        <section id="experience" class="experience">
-            <div class="container">
-                <h1 class="section-heading"><span>My </span>Experiences</h1>
-                <br>
-                <div class="card-wrapper">
-                    <div class="card">
-            
-                        <h2>Artificial Intelligence Intern</h2>
-                        <p>March 2023 - May 2023</p>
-                        <p>Design and developing deep learning models, such as Convolutional Neural Networks (CNN) and Generative Adversarial
-                            Networks (GAN).                            
-                        </p>
-                        <p>
-                            Assisting in data preprocessing, including data cleaning and feature extraction.
-                        </p>
-                    </div>
-                    <div class="card">
-                      
-                        <h2>Research Intern</h2>
-                        <p>September 2022 - Present</p>
-                        <p>The research focuses on detecting sexist text in the Indian context in several languages with a focus on minimizing bias.
-                            Extracting textual data from social media sites like Reddit, Twitter, Facebook, and YouTube using a web scrapper.
-                        </p>
-                        <p>
-                            Framing annotation guidelines that make the process as objective as possible.
-                        </p>
-                    </div>
-                   
-                </div>
-            </div>
-        </section>
-        <section class="internship">
-            <h1>Achievements</h1>
-            <p>Selected for Next Generation Women Leaders Asia Pacific 2023.</p>
-            <p>Ranked 4th in Amazon Product Data Scraping Crawler Making Competition Organized by IconBaby mOm Company.
+            <!-- Suggested Opening Line -->
+            <p class="text-teal-accent text-lg font-medium mb-6 tracking-wide max-w-4xl mx-auto">
+                My journey as a civil engineering graduate who ventured into artificial intelligence, data science, and computational modeling has shaped me into a researcher eager to bridge disciplines and tackle complex real-world problems.
             </p>
-            <p>Ranked 5th in CSS battle competition organized in GC at IIT BBS.</p>
-            <p>Completed Fundraising Internship at NGO Prashraya Welfare Foundation.</p>
-        </section>
-
-        <section id="Projects" class="Projects">
-            <div class="container">
-                <h1 class="section-heading"><span>My</span> Projects</h1>
-                <br><br>
-                <div class="slider">
-                    <div class="slide">
-                        <img src="./images/spam.png" alt="">
-                        <p><B><a href="https://github.com/purvi1508/-Amazon_Product_Scraper"> Amazon Data Scraping Crawler:</a> </B>The project entails the development of a web crawler leveraging Selenium and Beautiful
-                            Soup to enable automated daily data extraction from Amazon. The primary objective is to compile targeted product
-                            information and curate a comprehensive dataset suitable for further analysis. The crawler will adeptly navigate through
-                            product pages, adeptly extracting crucial data points such as product names, prices, reviews, and ratings.
-                            </p>
-                    </div>
-                    <br><br>
-                    <div class="slide">
-                        <img src="./images/sentiment.png" alt="">
-                        <p><B><a href="https://github.com/purvi1508/Text_Summarizer">Customized Text Summarizer:</a> </a></B>The project is a full-stack web application that utilizes HTML, CSS, and JavaScript for the
-                            frontend and Flask with Python for the backend. It simplifies the extraction of key information from large texts by generating
-                            concise summaries based on custom word or sentence length.
-                            </p>
-                    </div>
-                    <br><br>
-                    <div class="slide">
-                        <img src="./images/neural.png" alt="">
-                        <p><B><a href="https://github.com/purvi1508/analyze-mobility-patterns"> TripAnalyzer:</a></B> The TripAnalyzer project employs data processing, analysis, and visualization techniques to examine mobility
-                            patterns and hotspots in Beijing. It utilizes clustering (DBSCAN), evaluation (silhouette score), interactive map visualizations
-                            (folium), and network analysis (OSMnx with networkx). The project aims to gain insights into user mobility behaviors, trip
-                            connections, depot usage, distances traveled, and hotspot identification.
-                            </p>
-                    </div>
-                    <br><br>
-
-                </div>
-                <div class="slider-dots"></div>
+            
+            <h1 class="text-6xl md:text-8xl font-black crimson leading-tight">
+                Computational Insights for <span class="accent-violet">Real-World Impact</span>
+            </h1>
+            
+            <!-- Suggested Intro Paragraph (Modified for conciseness and visual boldness) -->
+            <p class="text-xl mt-6 text-text-dim max-w-4xl mx-auto">
+                As a Civil Engineering graduate from IIT Bhubaneswar, my research foundation is defined by its span across <span class="font-extrabold text-teal-accent">Computational Mechanics</span>, <span class="font-extrabold text-teal-accent">Artificial Intelligence</span>, and <span class="font-extrabold text-teal-accent">Data-Driven Modeling</span>. My journey is characterized by interdisciplinary rigor: from developing <span class="font-extrabold text-teal-accent">thermodynamically consistent neural network models</span> for complex materials, to building ML systems for social good, and designing scalable <span class="font-extrabold text-teal-accent">AI safety guardrails</span> in industry. This unique blend of experience in simulation, machine learning, and LLMs drives my pursuit of a PhD, where I aim to integrate diverse methodologies to contribute research that is both scientifically rigorous and societally meaningful.
+            </p>
+            
+            <div class="mt-12 flex justify-center space-x-6">
+                <a href="#skill-galaxy" class="bg-teal-600 hover:bg-teal-700 text-white font-bold py-3 px-8 rounded-full transition-colors shadow-lg shadow-teal-700/50">
+                    Explore Research Assets <i class="fas fa-arrow-down ml-2"></i>
+                </a>
             </div>
-        </section>
+        </div>
+    </section>
 
-        <section id="Licenses" class="Licenses">
-            <div class="container">
-                <h1 class="section-heading"><span>My Licenses & Certifications</span> </h1>
-<Br>
-                <div class="card-wrapper">
-                    <div class="card">
-                        <div class="img-wrapper">
-                            <img src="./images/logo.png" alt="">
-                        </div>
-                        <div class="card-content">
-                            <a href="https://www.coursera.org/account/accomplishments/certificate/U8WXUMPXDXTB">
-                                <h1>Introduction to Web Development with HTML, CSS, JavaScript</h1>
-                            </a>
-                            <span>March 11, 2023</span>
-                            <p>Learn about GANs and their applications.</p>
-                            <p>Understand the intuition behind the fundamental components of GANs.</p>
-                            <p>Explore and implement multiple GAN architectures.</p>
-                            <p>Build conditional GANs capable of generating examples from determined categories.</p>
-                        </div>
-                    </div>
-                    <div class="card">
-                        <div class="img-wrapper">
-                            <img src="./images/ibm.png" alt="">
-                        </div>
-                        <div class="card-content">
-                            <a href="https://www.coursera.org/learn/introduction-to-web-development-with-html-css-javacript/home/week/5?utm_source=link&utm_medium=certificate&utm_content=cert_image&utm_campaign=sharing_cta">
-                                <h1>Introduction to Web Development with HTML, CSS, JavaScript</h1>
-                            </a>
-                            <span>March 11, 2023</span>
-                            <p>Create the basic structure of a website.</p>
-                            <p>Create format and layout for web applications .</p>
-                            <p>Enhance your website and create rich, interactive applications .</p>
-                            <p>Increase user interactivity and enhance user experience .</p>
-                        </div>
-                    </div>
-                    <div class="card">
-                        <div class="img-wrapper">
-                            <img src="./images/download.png" alt="">
-                        </div>
-                        <div class="card-content">
-                            <a href="https://in.coursera.org/account/accomplishments/verify/338DRKRRRDWL">
-                                <h1>Applied Text Mining in Python</h1>
-                            </a>
-                            <span>December 19, 2022</span>
-                            <p>Understand how text is handled in Python.</p>
-                            <p>Apply basic natural language processing methods.</p>
-                            <p>Write code that groups documents by topic.</p>
-                            <p>Describe the nltk framework for manipulating text.</p>
-                        </div>
-                    </div>
-                    <div class="card">
-                        <div class="img-wrapper">
-                            <img src="./images/logo.png" alt="" >
-                        </div>
-                        <div class="card-content">
-                            <a href="https://www.coursera.org/account/accomplishments/verify/THUY8GZCZHRK?utm_source=ln&utm_medium=certificate&utm_content=cert_image&utm_campaign=sharing_cta&utm_product=course">
-                                <h1>Supervised Machine Learning: Regression and Classification</h1>
-                            </a>
-                            <span>November 11, 2022</span>
-                            <p>Build machine learning models in Python using popular machine learning libraries NumPy & scikit-learn</p>
-                            <p>Build & train supervised machine learning models for prediction & binary classification tasks, including linear regression & logistic regression</p>
+    <!-- 2. SKILL GALAXY (Interactive Solar System) -->
+    <section id="skill-galaxy" class="section-padding hidden-scroll">
+        <div class="container mx-auto px-4">
+            <h2 class="text-4xl font-extrabold text-center mb-4 crimson">
+                <i class="fas fa-satellite-dish text-teal-accent mr-3"></i> The Skill Galaxy
+            </h2>
+            <p class="text-center text-lg text-text-dim mb-12 max-w-3xl mx-auto">
+                The <span class="font-semibold text-text-strong">The Knowledge Star</span> (Sun) is orbited by the eight disciplines (Planets) that drive my interdisciplinary research. Click any planet to see its detailed dossier.
+            </p>
 
-                        </div>
-                    </div>
-                    <div class="card">
-                        <div class="img-wrapper">
-                            <img src="./images/google.png" alt="">
-                        </div>
-                        <div class="card-content">
-                            <a href="https://www.coursera.org/account/accomplishments/verify/YBCSCFMLQUSL?utm_source=ln&utm_medium=certificate&utm_content=cert_image&utm_campaign=sharing_cta&utm_product=course">
-                                <h1>Crash Course on Python</h1>
-                            </a>
-                            <span>January 17, 2022</span>
-                            <p>Understand what Python is and why Python is relevant to automation.</p>
-                            <p>Write short Python scripts to perform automated actions.</p>
-                            <p>Understand how to use the basic Python structures: strings, lists, and dictionaries.</p>
-                            <p>Create your own Python objects.</p>
+            <div id="galaxy-container">
+                <canvas id="galaxy-canvas"></canvas>
+                <div class="sun">
+                    <span>The Knowledge Star <br></span>
+                </div>
 
-                        </div>
-                    </div>
+                <!-- Skill Detail Panel (Replaces the large, centered modal for better layout) -->
+               <div id="skill-detail-panel" class="rounded-lg p-5">
+                    <h3 id="panel-dossier" class="text-2xl font-bold mb-2 text-violet-500 crimson">Select a Planet</h3>
+                    <p id="panel-explanation" class="text-base text-text-dim border-b border-text-dim/30 pb-3 mb-3">Click on any orbiting skill to view its specialized knowledge, toolset, and contribution to Scientific Machine Learning.</p>
+                    
+                    <p class="text-sm font-semibold text-teal-accent uppercase mt-4">Skillset:</p>
+                    <ul id="panel-skillset" class="text-sm text-text-light list-disc list-inside space-y-1 mt-2">
+                        <!-- Content populated by JavaScript -->
+                    </ul>
+                    <button onclick="hideSkillDetails()" class="mt-6 text-xs font-semibold text-teal-accent hover:text-white transition-colors">
+                        Close Panel <i class="fas fa-times ml-1"></i>
+                    </button>
                 </div>
             </div>
-        </section>
-        <section id ="contact" class="contact">
-            <div class="container">
-                <h1 class="section-heading">Contact <span>Me</span></h1>
-                <p>Open to work</p>
-                <div class="card-wrapper">
-                    <div class="card">
-                        <img src="./images/call.webp" alt="" width="200" height="200">
-                        <h1>Call Me On</h1>
-                        <h6>+91 ----- -----</h6>
-                    </div>
-                    <div class="card">
-                        <img src="./images/email.jpg" alt="" width="250" height="150">
-                        <h1>Email Me At</h1>
-                        <h6>20ce01050@iitbbs.ac.in</h6>
-                    </div>
-                    <div class="card">
-                        <img src="./images/IIT.png" alt="">
-                        <h1>College </h1>
-                        <h6>IIT Bhubaneshwar</h6>
-                    </div>
+        </div>
+    </section>
+<!-- 3. PUBLICATIONS & PROJECTS AS A TIMELINE OF DISCOVERIES (BALANCED GRID) -->
+<section id="timeline" class="section-padding hidden-scroll">
+    <div class="container mx-auto px-4">
+        <h2 class="text-4xl font-extrabold text-center mb-16 crimson">
+            <i class="fas fa-telescope text-teal-accent mr-3"></i> Timeline of Discoveries
+        </h2>
+        <!-- Updated Grid Structure for better Balance -->
+        <div class="relative timeline-container grid md:grid-cols-[1fr_2px_1fr] gap-y-10">
+            <div class="timeline-line hidden md:block"></div>
 
+            <!-- Discovery 1: PINN/ADFem Mechanics (LEFT side) -->
+            <div class="flex flex-row-reverse md:contents">
+                <div class="module-card p-6 rounded-lg my-4 w-full">
+                    <div class="flex space-x-2 mb-2 justify-end md:justify-start">
+                        <a href="https://github.com/purvi1508/Neural_Network_Plasticity_Modeling" target="_blank" class="flex items-center px-3 py-1 bg-gray-800 text-white text-xs rounded hover:bg-gray-700 transition">
+                            <i class="fab fa-github mr-1"></i> GitHub
+                        </a>
+                    </div>
+                    <span class="text-xs font-semibold text-teal-accent uppercase tracking-wider">
+                        Aug 2025 - Present
+                    </span>
+                    <h3 class="text-xl font-bold my-2 crimson">
+                        Part-time Research Intern
+                    </h3>
+                    <p class="text-sm text-text-dim">
+                        <strong>Position:</strong> Thermodynamically Consistent NN Plasticity Modeling<br>
+                        <strong>Affiliation:</strong> School of Infrastructure, Indian Institute of Technology Bhubaneswar<br>
+                        <strong>Department:</strong> Civil Engineering Department, Indian Institute of Technology Bombay<br>
+                        <strong>Advisors:</strong> Prof. Mohammad Masiur Rahaman and Prof. Tushar K. Mandal<br>
+                    </p>
+                    <p class="text-sm text-text-dim mt-2">
+                        ◦ Developed finite element simulations in <span class="font-semibold text-text-strong">Julia</span> using <span class="font-semibold text-text-strong">ADFem</span> to model nonlinear plastic deformation and stress–strain responses.<br>
+                        ◦ Implemented automatic differentiation frameworks (<span class="font-semibold text-text-strong">Flux</span>, <span class="font-semibold text-text-strong">Zygote</span>, <span class="font-semibold text-text-strong">Enzyme</span>) for scalable and efficient neural network training.<br>
+                        ◦ Designed deterministic neural-network-based plasticity models (GAM, NAM, etc.) with thermodynamic consistency constraints to accurately capture constitutive material behavior.
+                    </p>
                 </div>
+                <div class="timeline-marker shadow-[0_0_15px_#C77AD6]"></div>
+            </div>
 
+            <!-- Discovery 2: LLM Safety Agent (RIGHT side) -->
+            <div class="flex md:contents">
+                <div class="timeline-marker shadow-[0_0_15px_#64FFDA]"></div>
+                <div class="module-card p-6 rounded-lg my-4 w-full">
+                    <div class="flex space-x-2 mb-2">
+                        <!-- No buttons for this one, or add if needed -->
+                    </div>
+                    <span class="text-xs font-semibold text-teal-accent uppercase tracking-wider">
+                        July 2024 - Present
+                    </span>
+                    <h3 class="text-xl font-bold my-2 crimson">
+                        Senior Associate Data Science
+                    </h3>
+                    <p class="text-sm text-text-dim mt-2">
+                        ◦ <span class="font-semibold text-text-strong">AI Safety Guardrails for Mondelez:</span> Designed and implemented adaptive AI safety guardrails by integrating computer vision, deep learning, and large language models (LLMs). Deployed scalable APIs for dynamic protection, including Validators to prevent end-users from seeing unsafe or faulty LLM outputs.<br>
+                        ◦ <span class="font-semibold text-text-strong">Conversational AI Development:</span> Developed a multi-turn conversational agent with “bring-your-own-guardrail” capability using LLM orchestration and modular safety layers for context-aware responses and dynamic tool invocation.<br>
+                        ◦ <span class="font-semibold text-text-strong">Multimodal Content Processing (MCP):</span> Integrated MCP tools to enforce fine-grained safety policies and enable user-specific adaptations across diverse applications.<br>
+                        ◦ <span class="font-semibold text-text-strong">ATOMS – Automated Poster Extraction System:</span> Built an end-to-end system to extract structured elements (titles, authors, figures, disclosures) from Advertisements in collaboration with Pfizer and Eli Lilly.<br>
+                        &nbsp;&nbsp;&nbsp;◦ Developed a <strong>data augmentation pipeline</strong> to fine-tune object detection models.<br>
+                        &nbsp;&nbsp;&nbsp;◦ Designed an <strong>algorithm for multi-line text detection</strong> in images using PaddleOCR.<br>
+                        &nbsp;&nbsp;&nbsp;◦ Combined computer vision and NLP techniques to improve accuracy and scalability of structured information extraction.<br>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Discovery 3: Thesis Foundation (LEFT side) -->
+            <div class="flex flex-row-reverse md:contents">
+                <div class="module-card p-6 rounded-lg my-4 w-full">
+                    <div class="flex space-x-2 mb-2 justify-end md:justify-start">
+                        <a href="https://drive.google.com/file/d/1F0I7nB5JZsyjNiB5vyyfvhMX9jcjcgOf/view" target="_blank" class="flex items-center px-3 py-1 bg-teal-600 text-white text-xs rounded hover:bg-teal-500 transition">
+                            <i class="fas fa-book mr-1"></i> Doc
+                        </a>
+                    </div>
+                    <span class="text-xs font-semibold text-teal-accent uppercase tracking-wider">
+                        May 2023 - May 2024
+                    </span>
+                    <h3 class="text-xl font-bold my-2 crimson">
+                        Research Intern
+                    </h3>
+                    <p class="text-sm text-text-dim">
+                        <strong>Topic:</strong> Detecting Sexist Texts Targeted at Women in the Indian Context<br>
+                        <strong>Affiliation:</strong> SMMME, Indian Institute of Technology Bhubaneswar<br>
+                        <strong>Department:</strong> Institute of Computer Science, University of Tartu<br>
+                        <strong>Advisors:</strong> Prof. Kisor Kumar Sahu and Prof. Rajesh Sharma<br>
+                    </p>
+                    <p class="text-sm text-text-dim mt-2">
+                        ◦ Collected and preprocessed social media data using <span class="font-semibold text-text-strong">snscrape</span> (Twitter) and <span class="font-semibold text-text-strong">PRAW</span> (Reddit), including language normalization, stop-word removal, tokenization, and handling imbalanced class distributions.<br>
+                        ◦ Implemented automatic differentiation frameworks (<span class="font-semibold text-text-strong">Flux</span>, <span class="font-semibold text-text-strong">Zygote</span>, <span class="font-semibold text-text-strong">Enzyme</span>) for scalable and efficient neural network training.<br>
+                        ◦ Engineered textual features such as TF-IDF, n-grams, and sentiment scores, and integrated contextual embeddings using BERT and RoBERTa.<br>
+                        ◦ Developed machine learning and deep learning models including Multinomial Naive Bayes, KNN, ANN, RNN, LSTM, and CNN, experimenting with hybrid architectures for enhanced sequence modeling.<br>
+                        ◦ Evaluated models using metrics such as precision, recall, F1-score, ROC-AUC, and confusion matrices; implemented cross-validation and hyperparameter tuning for optimized performance.
+                    </p>
+                </div>
+                <div class="timeline-marker shadow-[0_0_15px_#C77AD6]"></div>
+            </div>
+
+            <!-- AI Intern (March 2023 - May 2023) -->
+            <div class="flex md:contents">
+                <div class="timeline-marker shadow-[0_0_15px_#64FFDA]"></div>
+                <div class="module-card p-6 rounded-lg my-4 w-full">
+                    <div class="flex space-x-2 mb-2">
+                        <a href="https://github.com/purvi1508/-GANimate-Deep-Learning-based-Future-Image-Prediction-from-a-Single-Input-Image" target="_blank" class="flex items-center px-3 py-1 bg-gray-800 text-white text-xs rounded hover:bg-gray-700 transition">
+                            <i class="fab fa-github mr-1"></i> GitHub
+                        </a>
+                        <a href="https://drive.google.com/file/d/1Pm2V0KT-aBYrl4HXsJi3MgSDNQKjlLWJ/view" target="_blank" class="flex items-center px-3 py-1 bg-teal-600 text-white text-xs rounded hover:bg-teal-500 transition">
+                            <i class="fas fa-book mr-1"></i> Doc
+                        </a>
+                    </div>
+                    <span class="text-xs font-semibold text-teal-accent uppercase tracking-wider">
+                        March 2023 - May 2023
+                    </span>
+                    <h3 class="text-xl font-bold my-2 crimson">
+                        Artificial Intelligence Intern
+                    </h3>
+                    <p class="text-sm text-text-dim mt-2">
+                        ◦ Collected, cleaned, and structured a large video dataset from YouTube, including subclipping, class-wise organization, and handling missing or invalid data, to prepare it for deep learning model training.<br>
+                        ◦ Designed and implemented a Generative Adversarial Network (GAN) for generating new video frames from single images, optimizing both generator and discriminator architectures and managing adversarial training for improved frame realism.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="certifications" class="section-padding hidden-scroll">
+    <div class="container mx-auto px-4">
+        <h2 class="text-4xl font-extrabold text-center mb-16 crimson">
+            <i class="fas fa-certificate text-teal-accent mr-3"></i>Certifications & Courses
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+
+            <!-- Certification 1 -->
+            <div class="cert-card relative module-card p-6 rounded-lg text-center group">
+                <img src="certificate1.jpg" alt="Certificate 1" class="mx-auto mb-4 rounded shadow-lg w-40 h-32 object-cover">
+                <h3 class="text-lg font-bold">Build Basic Generative Adversarial Networks (GANs)</h3>
+                <p class="text-xs text-text-dim mb-2">DeepLearning.AI</p>
+                <p class="text-sm text-text-dim">
+                    Learned the fundamentals of Generative Adversarial Networks, including training basic GANs, understanding their architecture, and practical applications in generating synthetic data.
+                </p>
+            </div>
+
+            <!-- Certification 2 -->
+            <div class="cert-card relative module-card p-6 rounded-lg text-center group">
+                <img src="certificate2.jpg" alt="Certificate 2" class="mx-auto mb-4 rounded shadow-lg w-40 h-32 object-cover">
+                <h3 class="text-lg font-bold">Applied Text Mining in Python</h3>
+                <p class="text-xs text-text-dim mb-2">University of Michigan</p>
+                <p class="text-sm text-text-dim">
+                    Focused on text mining techniques using Python, including text preprocessing, feature extraction, and sentiment analysis, with hands-on projects using real-world datasets.
+                </p>
+            </div>
+
+            <!-- Certification 3 -->
+            <div class="cert-card relative module-card p-6 rounded-lg text-center group">
+                <img src="certificate3.jpg" alt="Certificate 3" class="mx-auto mb-4 rounded shadow-lg w-40 h-32 object-cover">
+                <h3 class="text-lg font-bold">Introduction to Object-Oriented Programming in C++</h3>
+                <p class="text-xs text-text-dim mb-2">University of London</p>
+                <p class="text-sm text-text-dim">
+                    Covered core concepts of object-oriented programming, including classes, objects, inheritance, polymorphism, and encapsulation in C++, with practical coding exercises.
+                </p>
+            </div>
+
+            <!-- Certification 4 -->
+            <div class="cert-card relative module-card p-6 rounded-lg text-center group">
+                <img src="certificate4.jpg" alt="Certificate 4" class="mx-auto mb-4 rounded shadow-lg w-40 h-32 object-cover">
+                <h3 class="text-lg font-bold">Introduction to Web Development with HTML, CSS, JavaScript</h3>
+                <p class="text-xs text-text-dim mb-2">IBM</p>
+                <p class="text-sm text-text-dim">
+                    Gained foundational skills in web development, building responsive websites using HTML, CSS, and JavaScript, and understanding client-side web programming fundamentals.
+                </p>
+            </div>
+
+            <!-- Certification 5 -->
+            <div class="cert-card relative module-card p-6 rounded-lg text-center group">
+                <img src="certificate5.jpg" alt="Certificate 5" class="mx-auto mb-4 rounded shadow-lg w-40 h-32 object-cover">
+                <h3 class="text-lg font-bold">Supervised Machine Learning: Regression and Classification</h3>
+                <p class="text-xs text-text-dim mb-2">DeepLearning.AI / Stanford Online</p>
+                <p class="text-sm text-text-dim">
+                    Explored supervised machine learning techniques, including regression and classification models, evaluation metrics, and practical implementation using Python and real-world datasets.
+                </p>
+            </div>
+
+            <!-- Certification 6 -->
+            <div class="cert-card relative module-card p-6 rounded-lg text-center group">
+                <img src="certificate6.jpg" alt="Certificate 6" class="mx-auto mb-4 rounded shadow-lg w-40 h-32 object-cover">
+                <h3 class="text-lg font-bold">Crash Course on Python</h3>
+                <p class="text-xs text-text-dim mb-2">Google</p>
+                <p class="text-sm text-text-dim">
+                    Introduced to Python programming basics, including variables, data types, control structures, functions, and hands-on coding exercises for quick practical understanding.
+                </p>
+            </div>
+
+        </div>
+    </div>
+</section>
+<!-- Projects DNA Helix Section -->
+<!-- Projects DNA Helix Section -->
+<section id="projects" class="relative bg-dark text-white py-24 overflow-hidden">
+  <div class="container mx-auto px-6">
+
+    <h2 class="text-4xl font-extrabold text-center mb-16 crimson">
+      <i class="fas fa-rocket text-teal-accent mr-3"></i> Personal Projects
+    </h2>
+
+    <div id="helix" class="relative h-[1200px]">
+      <!-- Project nodes will be generated with JS -->
+    </div>
+
+<div id="project-panel" 
+     class="fixed right-6 top-1/2 transform -translate-y-1/2 
+            w-80 p-6 rounded-lg bg-gray-900/95 border border-cyan-400/30 hidden z-50 text-center">
+
+  <!-- Close Button -->
+  <button id="close-panel" 
+          class="absolute top-2 right-2 text-gray-400 hover:text-cyan-300 text-xl">✖</button>
+
+  <h3 id="project-title" class="text-lg font-bold text-cyan-300 mb-2"></h3>
+  <div id="project-desc" class="text-sm text-text-dim mb-4 text-justify"></div>
+
+  <a id="project-link" href="#" target="_blank" 
+     class="inline-block text-teal-accent hover:text-cyan-300 text-xl">
+    <i class="fab fa-github"></i>
+  </a>
+
+</div>
+
+
+  </div>
+</section>
+
+
+
+
+    <!-- 6. IMPACT & TEACHING HIGHLIGHTS -->
+    <section id="impact-hall" class="section-padding hidden-scroll">
+        <div class="container mx-auto px-4">
+            <h2 class="text-4xl font-extrabold text-center mb-16 crimson">
+                <i class="fas fa-trophy text-teal-accent mr-3"></i> Hall of Impact
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Impact Card 1: Hackathon Finalist -->
+                <div class="module-card p-6 rounded-lg text-center">
+                    <i class="fas fa-laptop-code text-5xl text-teal-accent mb-4"></i>
+                    <h3 class="text-xl font-bold crimson">Agentic AI Hackathon Finalist</h3>
+                    <p class="text-sm text-text-dim mt-2">Top finalist in the <span class="font-semibold text-text-strong">Google Cloud AgenticAI Day Hackathon</span>, demonstrating excellence in rapid LLM workflow and safety development.</p>
+                </div>
+                <!-- Impact Card 2: Academic Award -->
+                <div class="module-card p-6 rounded-lg text-center">
+                    <i class="fas fa-award text-5xl text-violet-500 mb-4"></i>
+                    <h3 class="text-xl font-bold crimson">General Championship 2024 Winner</h3>
+                    <p class="text-sm text-text-dim mt-2">Secured <span class="font-semibold text-text-strong">1st place</span> in the Machine Learning-based Real-time Age and Gender Detection competition at IIT Bhubaneswar (2024).</p>
+                </div>
+                <!-- Impact Card 3: Quantitative & Coding Awards -->
+                <div class="module-card p-6 rounded-lg text-center">
+                    <i class="fas fa-square-root-alt text-5xl text-teal-accent mb-4"></i>
+                    <h3 class="text-xl font-bold crimson">Quantitative & Coding Excellence</h3>
+                    <p class="text-sm text-text-dim mt-2">Achieved <span class="font-semibold text-text-strong">AIR 211</span> in the JLR Gearshift Code Rally and qualified in the <span class="font-semibold text-text-strong">Pre-Regional Mathematical Olympiad (PRMO), 2020</span>.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="py-10 border-t border-line-dark text-center text-sm text-text-dim mt-10">
+        <p>E-mail: 20ce01050@iitbbs.ac.in | <a href="https://github.com/purvi1508" target="_blank" class="text-teal-accent hover:text-violet-500">GitHub: purvi1508</a></p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const container = document.getElementById('galaxy-container');
+            const detailPanel = document.getElementById('skill-detail-panel');
+
+            // --- 1. Scroll Reveal Logic ---
+            const observerOptions = {
+                root: null,
+                threshold: 0.1
+            };
+
+            function handleIntersect(entries, observer) {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }
+
+            const observer = new IntersectionObserver(handleIntersect, observerOptions);
+            document.querySelectorAll('.hidden-scroll').forEach(section => {
+                observer.observe(section);
+            });
+            
+            // --- 2. Skill Galaxy (Solar System) Logic ---
+            const skillsData = [
+                // Planets (Core Disciplines)
+                // Speeds have been reduced significantly for slower, more deliberate movement.
+                { id: 1, name: "Programming & Languages", color: "#64FFDA", radius: 100, speed: 0.0025, size: 12, 
+                  dossier: "Computational programming for data-driven and simulation-based research.", 
+                  explanation: "Strong foundation in general-purpose and scientific programming for cross-domain applications.",
+                  skillset: ["Python", "C/C++", "Julia"] },
+                { id: 2, name: "Machine Learning & AI", color: "#C77AD6", radius: 130, speed: 0.0015, size: 14, 
+                  dossier: "End-to-end machine learning and deep learning expertise.", 
+                  explanation: "Experienced in classical ML, deep learning, NLP, computer vision, and advanced visualization.",
+                  skillset: ["Pandas", "NumPy", "Scikit-learn", "TensorFlow", "Keras", "PyTorch", "SciPy",  "Matplotlib", "NLTK", "SpaCy", "OpenCV"] },
+                { id: 3, name: "LLM Ops & Frameworks", color: "#FFD700", radius: 160, speed: 0.004, size: 10, 
+                  dossier: "Building and managing large language model pipelines.", 
+                  explanation: "Skilled in orchestration, deployment, and safety of LLM-based systems.",
+                  skillset: ["LangChain", "LangGraph", "LangFlow"] },
+                { id: 4, name: "Engineering & Simulation Tools", color: "#64FFDA", radius: 190, speed: 0.002, size: 16, 
+                  dossier: "Tools for structural, material, and engineering simulations.", 
+                  explanation: "Proficient in civil engineering modeling and simulation for research and applied contexts.",
+                  skillset: ["Abaqus", "STAAD Pro", "AutoCAD"] },
+                { id: 5, name: "Databases", color: "#C77AD6", radius: 220, speed: 0.003, size: 10, 
+                  dossier: "Data management for large-scale applications.", 
+                  explanation: "Hands-on with relational and NoSQL databases for storing and querying structured/unstructured data.",
+                  skillset: ["MySQL", "MongoDB"] },
+                { id: 6, name: "DevOps & Cloud", color: "#FFD700", radius: 250, speed: 0.001, size: 13, 
+                  dossier: "Deployment and scaling of computational models.", 
+                  explanation: "Experienced in containerization and orchestration for scalable research and industry projects.",
+                  skillset: ["Docker", "Kubernetes"] },
+                { id: 7, name: "Julia Ecosystem", color: "#64FFDA", radius: 280, speed: 0.0035, size: 15, 
+                  dossier: "Scientific computing with Julia.", 
+                  explanation: "Specialized in Julia-based packages for automatic differentiation, finite element methods, and scientific ML.",
+                  skillset: ["Flux.jl", "Zygote.jl", "Enzyme.jl", "DiffEqFlux.jl", "Gridap.jl", "ADFEM.jl", "DataFrames.jl", "Plots.jl", "PyPlot.jl", "SciML.jl"] },
+                { id: 8, name: "Domain-Specific Expertise", color: "#C77AD6", radius: 310, speed: 0.0015, size: 18, 
+                  dossier: "Advanced research methods in engineering and applied sciences.", 
+                  explanation: "Experience in computational mechanics, plasticity, structural health monitoring, and renewable energy.",
+                  skillset: ["Finite Element Methods (FEM)", "Physics-Informed Neural Networks (PINNs)", "Plasticity & Constitutive Modeling", "Computational Mechanics", "Structural Health Monitoring"] },
+                
+                // The 'Pluto' item (id 9) has been removed as requested.
+            ];
+
+            const canvas = document.getElementById('galaxy-canvas');
+            const ctx = canvas.getContext('2d');
+            const sun = document.querySelector('.sun');
+            let center, width, height;
+            let time = 0; // The time variable controlling the animation
+            const timeStep = 0.2; // Reduced global time step for slower motion
+
+            function resizeCanvas() {
+                width = container.clientWidth;
+                height = container.clientHeight;
+                canvas.width = width;
+                canvas.height = height;
+                center = { x: width / 2, y: height / 2 };
+                // Reposition the sun element after resize
+                sun.style.left = `${center.x - sun.clientWidth / 2}px`;
+                sun.style.top = `${center.y - sun.clientHeight / 2}px`;
+            }
+
+            window.addEventListener('resize', resizeCanvas);
+            resizeCanvas();
+
+            function draw() {
+                ctx.clearRect(0, 0, width, height);
+                time += timeStep; // Use the reduced time step
+
+                skillsData.forEach(skill => {
+                    // 1. Draw Orbit Line
+                    ctx.beginPath();
+                    ctx.arc(center.x, center.y, skill.radius, 0, 2 * Math.PI);
+                    ctx.strokeStyle = skill.color;
+                    ctx.globalAlpha = 0.2;
+                    ctx.stroke();
+
+                    // 2. Calculate Planet Position
+                    const angle = skill.speed * time;
+                    const x = center.x + skill.radius * Math.cos(angle);
+                    const y = center.y + skill.radius * Math.sin(angle);
+                    
+                    // 3. Update HTML Element Position (or draw a circle on canvas)
+                    let planetElement = document.getElementById(`planet-${skill.id}`);
+                    if (!planetElement) {
+                        planetElement = document.createElement('div');
+                        planetElement.id = `planet-${skill.id}`;
+                        planetElement.className = 'planet absolute';
+                        planetElement.style.backgroundColor = skill.color;
+                        planetElement.style.width = `${skill.size}px`;
+                        planetElement.style.height = `${skill.size}px`;
+                        planetElement.dataset.skillId = skill.id;
+                        planetElement.title = skill.name;
+                        
+                        planetElement.addEventListener('click', () => showSkillDetails(skill.id));
+                        container.appendChild(planetElement);
+                    }
+                    
+                    // Update position
+                    planetElement.style.left = `${x - skill.size / 2}px`;
+                    planetElement.style.top = `${y - skill.size / 2}px`;
+                });
+
+                requestAnimationFrame(draw);
+            }
+
+            function showSkillDetails(skillId) {
+                const skill = skillsData.find(s => s.id === skillId);
+                if (!skill) return;
+
+                document.getElementById('panel-dossier').textContent = skill.name;
+                document.getElementById('panel-dossier').style.color = skill.color;
+                document.getElementById('panel-explanation').textContent = skill.explanation;
+                
+                const skillsetUl = document.getElementById('panel-skillset');
+                skillsetUl.innerHTML = ''; // Clear previous
+                
+                // Add the skillset items
+                skill.skillset.forEach(tool => {
+                    const li = document.createElement('li');
+                    li.textContent = tool;
+                    skillsetUl.appendChild(li);
+                });
+
+                // Show the panel
+                detailPanel.classList.add('visible');
+                // *** Shift the galaxy to the left ***
+                if (window.innerWidth >= 1024) { // Only shift on desktop/tablet views
+                    container.classList.add('shifted');
+                }
+            }
+
+            window.hideSkillDetails = function() {
+                detailPanel.classList.remove('visible');
+                // *** Remove the shift from the galaxy ***
+                container.classList.remove('shifted');
+            }
+            
+            // Initialize with a default view for the panel
+            const defaultSkill = skillsData.find(s => s.id === 8);
+            if (defaultSkill) {
+                document.getElementById('panel-dossier').textContent = defaultSkill.name;
+                document.getElementById('panel-dossier').style.color = defaultSkill.color;
+                document.getElementById('panel-explanation').textContent = defaultSkill.explanation;
+                
+                const skillsetUl = document.getElementById('panel-skillset');
+                skillsetUl.innerHTML = '';
+                defaultSkill.skillset.slice(0, 3).forEach(tool => { // Show first few for default view
+                    const li = document.createElement('li');
+                    li.textContent = tool;
+                    skillsetUl.appendChild(li);
+                });
+            }
+
+
+            // Start the visualization loop
+            draw();
+        });
+const projects = [
+  {
+    name: "AI-Powered Agricultural Assistant",
+    desc: [
+"Developed a multimodal AI assistant to support Indian farmers by bridging the information gap across the agriculture lifecycle.",
+"Built using LangGraph, Gemini (Vertex AI), Google Cloud Platform, and Firestore, enabling voice, image, and text input for dynamic advisory on crop selection, government schemes, market prices, and weather alerts.",
+"Deployed LLM-powered agentic architecture with task-specific agents.",
+"Integrated real-time geolocation, speech translation, plant disease detection, and market intelligence.",
+"Engineered a scheme recommendation engine with vector search to match farmers to relevant subsidies.",
+"Designed for scalability with Kubernetes, Firebase, and future integration with national agriculture APIs."
+    ],
+    link: "https://github.com/purvi1508/AgriAssist"
+  },
+  {
+    name: "Safeguard Toolkit (Open-Source Python Security Scanner)",
+    desc: [
+"Designed and developed an open-source security analysis toolkit using Python, demonstrating modular design, file system operations, and static code analysis.",
+"Built custom scanners like PermissionsChecker (auditing directory and file permissions) and EvalExecScanner",
+"(detecting insecure use of eval() and exec()), showcasing expertise in secure coding practices.",
+"Packaged and distributed via PyPI with well-documented architecture to support future extensibility.",
+"Emphasizes strengths in Python packaging, automation, and secure coding, suitable for integration into CI/CD pipelines for pre-deployment risk checks.",
+"Install the latest release from PyPI: pip install safeguard toolkit."
+    ],
+    link: "https://github.com/purvi1508/Safeguard"
+  },
+  {
+    name: "Physics-Informed Neural Networks for Nonlinear Cantilever Beam Analysis",
+    desc: [
+"Leveraged PyTorch to implement Physics-Informed Neural Networks (PINNs) for analyzing a nonlinear cantilever beam system.",
+"Compared results from the neural network model with finite element analysis, improving understanding and accuracy of the beam’s behavior.",
+"Conducted comparative study of Galerkin Method vs PINN for solving the nonlinear exact equation of deflection of an elastic beam.",
+    ],
+    link: "https://drive.google.com/file/d/1Te4KKJRomf0d3niqzYLglT0MFMBjtjDr/view"
+  },
+{
+  name: "Age and Gender Detection System",
+  desc: [
+    "Dataset: UTKFace dataset (archive.zip)",
+    "Input: Grayscale images, 128x128 pixels",
+    "CNN Layers: Conv2D with filters (64, 128, 256) + MaxPooling",
+    "Dense + Dropout: 512 units (ReLU) with dropout for regularization",
+    "Transformer Block: Multi-Head Attention (7 heads) + LayerNorm",
+    "BiLSTM Block: 64 units + GlobalMaxPooling1D for temporal dependencies",
+    "Output: Dual dense layers for gender & age prediction",
+    "Real-time detection via webcam stream using Haar cascade",
+    "Predictions: Bounding box overlay with live age & gender labels"
+  ],
+  link: "https://github.com/purvi1508/Age-and-gender-detection-system-"
+},
+{
+  name: "Amazon Product Scraper",
+  desc: [
+    "Scrapes Amazon product pages with a flexible base URL",
+    "Extracts key details: product name, price, reviews, and ratings",
+    "Works dynamically with user-provided product URLs",
+    "Crawler navigates through product pages automatically",
+  ],
+  link: "https://github.com/purvi1508/-Amazon_Product_Scraper"
+},
+{
+  name: "Multimodal Therapy Assistant",
+  desc: [
+    "Scalable multi-agent system supporting emotional wellness",
+    "Inputs: text, voice, and facial emotion detection",
+    "Central Supervisor Agent: orchestrates routing & ensures safety",
+    "Perception Agent: processes voice tone, face emotion, and text input",
+    "Cognitive Insight Agent: detects intent, distortions, toxicity, risks",
+    "Therapeutic Planner Agent: generates CBT/DBT-based supportive responses",
+    "Long-Term Memory Agent: tracks emotional evolution & stores session history",
+    "Tools Used: audio transcription, emotion detection, intent detection, risk escalation, tone-adaptive rewriting",
+    "Output Pipeline: combines therapeutic response + metadata for personalization"
+  ],
+  link: "https://github.com/purvi1508/Multimodal-Therapy-Assistant"
+}
+
+
+
+];
+
+
+const helix = document.getElementById("helix");
+const panel = document.getElementById("project-panel");
+const titleEl = document.getElementById("project-title");
+const descEl = document.getElementById("project-desc");
+const linkEl = document.getElementById("project-link");
+const closeBtn = document.getElementById("close-panel");
+
+// Generate nodes
+projects.forEach((p, i) => {
+  const node = document.createElement("div");
+  node.className = "helix-node";
+  node.innerHTML = `<span>${p.name}</span>`;
+  node.dataset.index = i;
+  helix.appendChild(node);
+});
+
+// Animate nodes (DNA spiral)
+function renderHelix() {
+  const nodes = document.querySelectorAll(".helix-node");
+  const scrollY = window.scrollY * 0.002;
+  nodes.forEach((node, i) => {
+    const angle = scrollY + i * 0.8;
+    const x = Math.cos(angle) * 220 + (helix.clientWidth/2 - 70);
+    const y = i * 200;
+    const z = Math.sin(angle) * 100;
+
+    node.style.top = y + "px";
+    node.style.left = x + "px";
+    node.style.zIndex = Math.floor(1000 + z);
+    node.style.opacity = 0.7 + (z/200);
+  });
+  requestAnimationFrame(renderHelix);
+}
+renderHelix();
+
+function openProjectPanel(project) {
+  // Set project title
+  document.getElementById("project-title").textContent = project.name;
+
+  // Set GitHub/document link
+  document.getElementById("project-link").href = project.link;
+
+  // Render description as list
+  const descContainer = document.getElementById("project-desc");
+  descContainer.innerHTML = ""; // clear previous content
+
+  const ul = document.createElement("ul");
+  ul.className = "list-disc list-inside space-y-1 text-left text-sm text-gray-300"; // Tailwind classes for bullets
+
+  project.desc.forEach(item => {
+    const li = document.createElement("li");
+    li.className = "ml-2"; // small indent for bullets
+    li.textContent = item;
+    ul.appendChild(li);
+  });
+
+  descContainer.appendChild(ul);
+
+  // Show panel
+  document.getElementById("project-panel").classList.remove("hidden");
+}
+
+
+// Close panel button
+document.getElementById("close-panel").addEventListener("click", () => {
+  document.getElementById("project-panel").classList.add("hidden");
+});
+// Node click → open project panel
+helix.addEventListener("click", (e) => {
+  const node = e.target.closest(".helix-node");
+  if (node) {
+    const p = projects[node.dataset.index];
+    titleEl.textContent = p.name;
+    descEl.textContent = p.desc;
+    linkEl.href = p.link;
+    panel.classList.remove("hidden");
+  }
+});
+
+// Close button
+closeBtn.addEventListener("click", () => {
+  panel.classList.add("hidden");
+});
+
+// Auto-close when scrolling beyond the section
+window.addEventListener("scroll", () => {
+  const rect = helix.getBoundingClientRect();
+  if (rect.bottom < 0 || rect.top > window.innerHeight) {
+    panel.classList.add("hidden");
+  }
+});
+    </script>
 </body>
-
-</html>
