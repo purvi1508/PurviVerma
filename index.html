@@ -25,6 +25,7 @@
             background-color: var(--bg-dark);
             color: var(--text-light);
             scroll-behavior: smooth;
+            overflow-x: hidden;
         }
 
         .crimson { font-family: var(--font-serif); }
@@ -56,6 +57,36 @@
             transition: all 0.3s ease;
         }
         .cta-button:hover { background-color: rgba(100, 255, 218, 0.1); }
+
+        /* Mobile nav toggle - hidden on desktop */
+        #nav-toggle { display: none; }
+        #main-nav { display: flex; }
+
+        @media (max-width: 767px) {
+            #nav-toggle {
+                display: inline-flex;
+                background: transparent;
+                border: 1px solid var(--accent-teal);
+                color: var(--accent-teal);
+                padding: 6px 10px;
+                border-radius: 4px;
+                font-size: 1rem;
+            }
+            #main-nav {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                flex-direction: column;
+                background-color: var(--primary-surface);
+                padding: 1rem;
+                gap: 0.75rem;
+                border-bottom: 1px solid rgba(100,255,218,0.2);
+            }
+            #main-nav.open { display: flex; }
+            #main-nav a.cta-button { display: inline-block; width: fit-content; }
+        }
 
         /* Scroll Reveal (Standard Fade-Up) */
         .hidden-scroll { opacity: 0; transform: translateY(30px); transition: all 1s ease-out; }
@@ -98,26 +129,57 @@
         /* Mobile View (Stacking) */
         @media (max-width: 767px) {
             .timeline-container {
-                grid-template-columns: 10px 1fr; /* 2-column layout: Line | Content */
+                display: block !important; /* simple vertical stack — must beat Tailwind's .grid utility regardless of injection order */
+                row-gap: 0;
+            }
+            /* Row wrappers just become normal stacked blocks; the inner module-card
+               and timeline-marker no longer need separate grid placement. */
+            .timeline-container > .flex,
+            .timeline-container > .flex-row-reverse {
+                display: block !important;
             }
             .timeline-line {
-                left: 5px; /* Move line to the far left */
+                display: block !important; /* override Tailwind's "hidden" class — the line was never rendering on mobile at all */
+                left: 5px; /* Move line to the far left, aligned with the dots */
                 transform: none;
+                background: linear-gradient(to bottom, rgba(100,255,218,0.5), rgba(199,122,214,0.5));
+                width: 2px;
             }
+            /* The original marker dot relied on grid alignment to land next to its card,
+               which drifted because every card has a different internal height (some have
+               a GitHub/Doc button row, some don't). Hide it and draw the dot instead as a
+               ::before on the card itself — that ties it permanently to a fixed offset from
+               THAT card's own top edge, so it can never drift relative to the wrong card. */
             .timeline-marker {
-                grid-column: 1 / 2;
-                margin-left: -5px; /* Align marker on the line */
+                display: none !important;
             }
-            /* All cards go to the right of the line */
+            .timeline-container > .flex-row-reverse > .module-card,
+            .timeline-container > .flex:not(.flex-row-reverse) > .module-card,
             .timeline-container > div > .module-card {
-                grid-column: 2 / 3;
-                margin-left: 2rem;
-                margin-right: 0;
+                margin-left: 1.4rem !important;
+                margin-right: 0 !important;
+                margin-top: 0 !important;
+                margin-bottom: 1.4rem !important;
+                border-radius: 12px !important;
+                position: relative !important;
+                width: auto !important;
+                max-width: none !important;
             }
-            /* Remove reverse column ordering for mobile stacking */
-            .timeline-container > .flex-row-reverse {
-                flex-direction: row;
+            .timeline-container .module-card::before {
+                content: '';
+                position: absolute;
+                left: -1.3rem;
+                top: 1.3rem;
+                width: 12px;
+                height: 12px;
+                border-radius: 50%;
+                background-color: var(--text-light);
+                border: 3px solid var(--bg-dark);
+                box-shadow: 0 0 10px rgba(100,255,218,0.6);
+                z-index: 2;
             }
+            #timeline h2 { margin-bottom: 1.75rem !important; font-size: 1.85rem !important; }
+            #timeline { padding: 28px 0 !important; }
         }
 .helix-node {
   position: absolute;
@@ -155,6 +217,21 @@
   color: #00e6b8;
 }
 
+@media (max-width: 767px) {
+    .helix-node {
+        width: 100px;
+        height: 100px;
+    }
+    .helix-node span {
+        font-size: 0.7rem;
+    }
+    #project-panel {
+        right: 1rem !important;
+        left: 1rem !important;
+        width: auto !important;
+        transform: translateY(-50%) !important;
+    }
+}
 
         /* Skill Galaxy Specific Styles */
         #galaxy-container {
@@ -187,12 +264,12 @@
             z-index: 1;
         }
 
-        /* Sun (Core) Style - INCREASED SIZE TO 140PX */
+        /* Sun (Core) Style - BALANCED SIZE */
         .sun {
             position: absolute;
             background: radial-gradient(circle, #FFD700 0%, #FFA500 70%, #C77AD6 100%);
-            width: 140px; 
-            height: 140px; 
+            width: 100px; 
+            height: 100px; 
             border-radius: 50%;
             box-shadow: 0 0 50px rgba(255, 165, 0, 0.8), 0 0 100px rgba(255, 215, 0, 0.4);
             display: flex;
@@ -248,17 +325,35 @@
         }
 
         @media (max-width: 1024px) {
-            #galaxy-container { height: 500px; }
+            #galaxy-container {
+                height: 420px;
+                /* Container must grow to fit the panel once it switches to a normal
+                   flow child below — otherwise overflow:hidden clips it and the
+                   flex centering pulls it up over the orbiting planets. */
+                flex-wrap: wrap;
+                align-content: flex-start;
+                overflow: visible;
+            }
+            .sun { width: 110px; height: 110px; }
+            .sun span { font-size: 1.1rem; }
             #skill-detail-panel {
                 position: relative;
                 top: auto;
                 right: auto;
                 transform: none;
                 width: 90%;
-                margin: 20px auto;
-                opacity: 1;
-                visibility: visible;
+                margin: 20px auto 0;
                 min-height: auto;
+                flex-basis: 100%;
+                order: 99;
+                /* opacity/visibility intentionally NOT forced here — the panel should
+                   stay hidden until a planet is tapped (.visible class added by JS),
+                   otherwise it shows up unprompted and the Close button has nothing to undo. */
+            }
+            #skill-detail-panel:not(.visible) {
+                /* When hidden, fully remove from flow so it can't reserve space
+                   or be mistaken for visible content above the fold. */
+                display: none;
             }
             #skill-detail-panel.visible { transform: none; }
             /* Disable shifting on small screens since the panel is already below the galaxy */
@@ -269,23 +364,125 @@
                 transition: none;
             }
         }
+
+        @media (max-width: 767px) {
+            #hero h1 { font-size: 2.25rem !important; line-height: 1.25; }
+            #hero p { font-size: 1rem !important; }
+        }
+
+        /* --- TIMELINE: touch-friendly reveal --- */
+        @media (max-width: 767px) {
+            /* Tighter card padding + smaller type so each entry takes noticeably
+               less vertical room on a phone screen. */
+            #timeline .module-card { padding: 0.9rem 1rem !important; }
+            #timeline .module-card h3 { font-size: 1.05rem !important; margin: 0.35rem 0 !important; line-height: 1.3; }
+            #timeline .module-card > span.text-xs { font-size: 0.68rem !important; letter-spacing: 0.03em; }
+            #timeline .module-card .flex.space-x-2 { margin-bottom: 0.4rem !important; justify-content: flex-start !important; }
+            #timeline .module-card .flex.space-x-2 a { padding: 0.2rem 0.55rem !important; font-size: 0.68rem !important; }
+            #timeline .timeline-details p { font-size: 0.78rem !important; line-height: 1.5; margin-top: 0.4rem !important; }
+
+            /* Cut the dead space between stacked cards (see base rule above; this
+               block only adds the type/padding compression). */
+            .timeline-details {
+                /* default collapsed; JS toggles .details-open instead of relying on :hover */
+                opacity: 0;
+                max-height: 0;
+            }
+            .timeline-details.details-open {
+                opacity: 1;
+                max-height: 800px !important;
+            }
+            .timeline-toggle-hint {
+                display: inline-flex;
+                align-items: center;
+                gap: 4px;
+                cursor: pointer;
+                -webkit-tap-highlight-color: transparent;
+                font-size: 0.68rem !important;
+                margin-top: 0.5rem !important;
+            }
+            .timeline-toggle-hint i { transition: transform 0.3s ease; font-size: 0.65rem; }
+            .timeline-toggle-hint.open i { transform: rotate(180deg); }
+        }
+        @media (min-width: 768px) {
+            /* desktop keeps the original hint text, no chevron, no JS toggle needed */
+            .timeline-toggle-hint i { display: none; }
+        }
+
+        /* Planet name label: shown on hover (desktop) and on tap (mobile), since
+           the title= tooltip is unreliable on touch and easy to miss on desktop too. */
+        .planet-label {
+            position: absolute;
+            font-size: 0.7rem;
+            color: var(--text-light);
+            background: rgba(10,25,47,0.9);
+            border: 1px solid rgba(100,255,218,0.4);
+            padding: 2px 7px;
+            border-radius: 4px;
+            white-space: nowrap;
+            pointer-events: none;
+            transform: translate(-50%, -130%);
+            z-index: 15;
+        }
+
+        /* --- SKILL GALAXY: mobile tuning --- */
+        @media (max-width: 767px) {
+            #galaxy-container { height: 380px; }
+            .sun { width: 100px; height: 100px; }
+            .sun span { font-size: 0.85rem; line-height: 1.15; padding: 0 6px; display: inline-block; }
+            .planet { min-width: 14px; min-height: 14px; }
+            #skill-detail-panel {
+                width: 100%;
+                margin: 16px 0 0 0;
+                padding: 1.25rem;
+            }
+            #skill-detail-panel h3 { font-size: 1.25rem; }
+            .planet-label { font-size: 0.6rem; padding: 1px 5px; }
+
+            /* Certifications mobile 2-column optimization */
+            #certifications .grid { gap: 1rem !important; }
+            #certifications .cert-card { 
+                padding: 1rem !important; 
+            }
+            #certifications .cert-card img { 
+                width: 80px !important; 
+                height: 64px !important; 
+                margin-bottom: 0.75rem !important;
+            }
+            #certifications .cert-card h3 { 
+                font-size: 0.95rem !important; 
+                line-height: 1.2 !important;
+                margin-bottom: 0.4rem !important;
+            }
+            #certifications .cert-card > p:nth-of-type(1) { 
+                font-size: 0.65rem !important; 
+                margin-bottom: 0.5rem !important;
+            }
+            #certifications .cert-card > p:nth-of-type(2) { 
+                font-size: 0.75rem !important; 
+                line-height: 1.4 !important;
+            }
+        }
         
     </style>
 </head>
 <body class="selection:bg-teal-700 selection:text-white">
 
     <!-- 0. Header (Architectural Bar) -->
-    <header id="navbar" class="sticky top-0 z-50 header-glow">
+    <header id="navbar" class="sticky top-0 z-50 header-glow relative">
         <div class="container mx-auto px-4 py-4 flex justify-between items-center">
             <a href="#hero" class="text-xl font-bold text-light flex items-center">
                 <i class="fas fa-satellite-dish text-teal-accent mr-3"></i> Purvi Verma 
             </a>
-            <nav class="flex space-x-6">
+            <button id="nav-toggle" aria-label="Toggle navigation">
+                <i class="fas fa-bars"></i>
+            </button>
+            <nav id="main-nav" class="space-x-6 md:flex md:space-x-6">
                 <a href="#skill-galaxy" class="nav-link text-sm text-text-dim hover:text-teal-accent transition-colors">Skill Galaxy</a>
                 <a href="#timeline" class="nav-link text-sm text-text-dim hover:text-teal-accent transition-colors">Professional Timeline</a>
                 <a href="#certifications" class="nav-link text-sm text-text-dim hover:text-teal-accent transition-colors">Certifications</a>
                 <a href="#projects" class="nav-link text-sm text-text-dim hover:text-teal-accent transition-colors">Personal Projects</a>
-                <a href="CV_Purvi_PhD.pdf" target="_blank" class="cta-button text-xs font-semibold px-3 py-1 rounded-sm tracking-widest">FULL CV</a>
+                <a href="Resume_PurviVerma_.pdf" target="_blank" class="cta-button text-xs font-semibold px-3 py-1 rounded-sm tracking-widest">FULL CV</a>
             </nav>
         </div>
     </header>
@@ -351,7 +548,7 @@
                     <ul id="panel-skillset" class="text-sm text-text-light list-disc list-inside space-y-1 mt-2">
                         <!-- Content populated by JavaScript -->
                     </ul>
-                    <button onclick="hideSkillDetails()" class="mt-6 text-xs font-semibold text-teal-accent hover:text-white transition-colors">
+                    <button id="skill-panel-close" class="mt-6 text-xs font-semibold text-teal-accent hover:text-white transition-colors">
                         Close Panel <i class="fas fa-times ml-1"></i>
                     </button>
                 </div>
@@ -394,7 +591,7 @@
                             ◦ Designed deterministic neural-network-based plasticity models (GAM, NAM, etc.) with thermodynamic consistency.
                         </p>
                     </div>
-                    <span class="text-xs text-gray-400 mt-2 block">Hover to see more...</span>
+                    <span class="text-xs text-gray-400 mt-2 block timeline-toggle-hint">Tap / hover to see more <i class="fas fa-chevron-down"></i></span>
                 </div>
                 <div class="timeline-marker shadow-[0_0_15px_#C77AD6]"></div>
             </div>
@@ -412,7 +609,7 @@
                     <div class="timeline-details opacity-0 max-h-0 overflow-hidden group-hover:opacity-100 group-hover:max-h-[700px] transition-all duration-300">
                         <p class="text-sm text-text-dim mt-2">
                             ◦ <strong>AI Safety Guardrails for Mondelez:</strong> Designed adaptive AI safety guardrails integrating CV, deep learning, and LLMs.<br>
-                            ◦ <strong>Conversational AI:</strong> Developed multi-turn conversational agent with “bring-your-own-guardrail”.<br>
+                            ◦ <strong>Conversational AI:</strong> Developed multi-turn conversational agent with "bring-your-own-guardrail".<br>
                             ◦ <strong>Multimodal Content Processing (MCP):</strong> Integrated tools to enforce fine-grained safety policies.<br>
                             ◦ <strong>ATOMS – Automated Poster Extraction System:</strong> Built end-to-end system to extract structured elements from Advertisements (Pfizer & Eli Lilly).<br>
                             &nbsp;&nbsp;◦ Data augmentation for fine-tuning object detection models.<br>
@@ -420,7 +617,7 @@
                             &nbsp;&nbsp;◦ Combined CV and NLP for structured info extraction.
                         </p>
                     </div>
-                    <span class="text-xs text-gray-400 mt-2 block">Hover to see more...</span>
+                    <span class="text-xs text-gray-400 mt-2 block timeline-toggle-hint">Tap / hover to see more <i class="fas fa-chevron-down"></i></span>
                 </div>
             </div>
 
@@ -450,7 +647,7 @@
                             ◦ Evaluated models using precision, recall, F1-score, ROC-AUC; performed cross-validation & hyperparameter tuning.
                         </p>
                     </div>
-                    <span class="text-xs text-gray-400 mt-2 block">Hover to see more...</span>
+                    <span class="text-xs text-gray-400 mt-2 block timeline-toggle-hint">Tap / hover to see more <i class="fas fa-chevron-down"></i></span>
                 </div>
                 <div class="timeline-marker shadow-[0_0_15px_#C77AD6]"></div>
             </div>
@@ -479,7 +676,7 @@
                             ◦ Designed a GAN to generate video frames from single images, optimized generator/discriminator for realism.
                         </p>
                     </div>
-                    <span class="text-xs text-gray-400 mt-2 block">Hover to see more...</span>
+                    <span class="text-xs text-gray-400 mt-2 block timeline-toggle-hint">Tap / hover to see more <i class="fas fa-chevron-down"></i></span>
                 </div>
             </div>
 
@@ -493,7 +690,7 @@
         <h2 class="text-4xl font-extrabold text-center mb-16 crimson">
             <i class="fas fa-certificate text-teal-accent mr-3"></i>Certifications & Courses
         </h2>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-8">
 
             <!-- Certification 1 -->
             <div class="cert-card relative module-card p-6 rounded-lg text-center group">
@@ -635,6 +832,49 @@
             const container = document.getElementById('galaxy-container');
             const detailPanel = document.getElementById('skill-detail-panel');
 
+            // --- Timeline: guarantee mobile stacking regardless of Tailwind CDN's
+            // CSS injection timing. The Tailwind CDN script generates and injects
+            // its utility CSS (including the "grid" class used by .timeline-container)
+            // asynchronously, so it can land after our hand-written <style> block and
+            // win ties in the cascade even though our media query is more specific in
+            // intent. Stripping the "grid" class directly in JS removes the conflict
+            // at the source instead of fighting it with !important everywhere.
+            function syncTimelineLayout() {
+                const tl = document.querySelector('.timeline-container');
+                if (!tl) return;
+                if (window.innerWidth < 768) {
+                    tl.classList.remove('grid');
+                    tl.style.display = 'block';
+                } else {
+                    tl.classList.add('grid');
+                    tl.style.display = '';
+                }
+            }
+            syncTimelineLayout();
+            window.addEventListener('resize', syncTimelineLayout);
+
+            // --- Timeline: tap-to-expand on touch/mobile (hover doesn't work on phones) ---
+            document.querySelectorAll('.timeline-toggle-hint').forEach(hint => {
+                hint.addEventListener('click', () => {
+                    const card = hint.closest('.module-card');
+                    const details = card.querySelector('.timeline-details');
+                    const isOpen = details.classList.toggle('details-open');
+                    hint.classList.toggle('open', isOpen);
+                });
+            });
+
+            // --- Mobile nav toggle ---
+            const navToggle = document.getElementById('nav-toggle');
+            const mainNav = document.getElementById('main-nav');
+            if (navToggle) {
+                navToggle.addEventListener('click', () => {
+                    mainNav.classList.toggle('open');
+                });
+                mainNav.querySelectorAll('a').forEach(link => {
+                    link.addEventListener('click', () => mainNav.classList.remove('open'));
+                });
+            }
+
             // --- 1. Scroll Reveal Logic ---
             const observerOptions = {
                 root: null,
@@ -659,35 +899,36 @@
             const skillsData = [
                 // Planets (Core Disciplines)
                 // Speeds have been reduced significantly for slower, more deliberate movement.
-                { id: 1, name: "Programming & Languages", color: "#64FFDA", radius: 100, speed: 0.0025, size: 12, 
+                {},
+                { id: 1, name: "Programming & Languages", color: "#64FFDA", radius: 100, speed: 0.0025, size: 24, 
                   dossier: "Computational programming for data-driven and simulation-based research.", 
                   explanation: "Strong foundation in general-purpose and scientific programming for cross-domain applications.",
                   skillset: ["Python", "C/C++", "Julia"] },
-                { id: 2, name: "Machine Learning & AI", color: "#C77AD6", radius: 130, speed: 0.0015, size: 14, 
+                { id: 2, name: "Machine Learning & AI", color: "#C77AD6", radius: 130, speed: 0.0015, size: 28, 
                   dossier: "End-to-end machine learning and deep learning expertise.", 
                   explanation: "Experienced in classical ML, deep learning, NLP, computer vision, and advanced visualization.",
                   skillset: ["Pandas", "NumPy", "Scikit-learn", "TensorFlow", "Keras", "PyTorch", "SciPy",  "Matplotlib", "NLTK", "SpaCy", "OpenCV"] },
-                { id: 3, name: "LLM Ops & Frameworks", color: "#FFD700", radius: 160, speed: 0.004, size: 10, 
+                { id: 3, name: "LLM Ops & Frameworks", color: "#FFD700", radius: 160, speed: 0.004, size: 20, 
                   dossier: "Building and managing large language model pipelines.", 
                   explanation: "Skilled in orchestration, deployment, and safety of LLM-based systems.",
                   skillset: ["LangChain", "LangGraph", "LangFlow"] },
-                { id: 4, name: "Engineering & Simulation Tools", color: "#64FFDA", radius: 190, speed: 0.002, size: 16, 
+                { id: 4, name: "Engineering & Simulation Tools", color: "#64FFDA", radius: 190, speed: 0.002, size: 32, 
                   dossier: "Tools for structural, material, and engineering simulations.", 
                   explanation: "Proficient in civil engineering modeling and simulation for research and applied contexts.",
                   skillset: ["Abaqus", "STAAD Pro", "AutoCAD"] },
-                { id: 5, name: "Databases", color: "#C77AD6", radius: 220, speed: 0.003, size: 10, 
+                { id: 5, name: "Databases", color: "#C77AD6", radius: 220, speed: 0.003, size: 20, 
                   dossier: "Data management for large-scale applications.", 
                   explanation: "Hands-on with relational and NoSQL databases for storing and querying structured/unstructured data.",
                   skillset: ["MySQL", "MongoDB"] },
-                { id: 6, name: "DevOps & Cloud", color: "#FFD700", radius: 250, speed: 0.001, size: 13, 
+                { id: 6, name: "DevOps & Cloud", color: "#FFD700", radius: 250, speed: 0.001, size: 26, 
                   dossier: "Deployment and scaling of computational models.", 
                   explanation: "Experienced in containerization and orchestration for scalable research and industry projects.",
                   skillset: ["Docker", "Kubernetes"] },
-                { id: 7, name: "Julia Ecosystem", color: "#64FFDA", radius: 280, speed: 0.0035, size: 15, 
+                { id: 7, name: "Julia Ecosystem", color: "#64FFDA", radius: 280, speed: 0.0035, size: 30, 
                   dossier: "Scientific computing with Julia.", 
                   explanation: "Specialized in Julia-based packages for automatic differentiation, finite element methods, and scientific ML.",
                   skillset: ["Flux.jl", "Zygote.jl", "Enzyme.jl", "DiffEqFlux.jl", "Gridap.jl", "ADFEM.jl", "DataFrames.jl", "Plots.jl", "PyPlot.jl", "SciML.jl"] },
-                { id: 8, name: "Domain-Specific Expertise", color: "#C77AD6", radius: 310, speed: 0.0015, size: 18, 
+                { id: 8, name: "Domain-Specific Expertise", color: "#C77AD6", radius: 310, speed: 0.0015, size: 36, 
                   dossier: "Advanced research methods in engineering and applied sciences.", 
                   explanation: "Experience in computational mechanics, plasticity, structural health monitoring, and renewable energy.",
                   skillset: ["Finite Element Methods (FEM)", "Physics-Informed Neural Networks (PINNs)", "Plasticity & Constitutive Modeling", "Computational Mechanics", "Structural Health Monitoring"] },
@@ -701,6 +942,16 @@
             let center, width, height;
             let time = 0; // The time variable controlling the animation
             const timeStep = 0.2; // Reduced global time step for slower motion
+            let hoveredSkillId = null; // set on mouseenter/click; used to show a floating name label
+            let hoverLabelEl = null;
+
+            // Responsive scale factor so orbit radii fit smaller screens
+            function getScale() {
+                // Largest orbit radius in data is 310, sun ~70 half-width.
+                const maxRadius = 310;
+                const available = Math.min(width, height) / 2 - 20;
+                return Math.min(1, available / maxRadius);
+            }
 
             function resizeCanvas() {
                 width = container.clientWidth;
@@ -719,40 +970,65 @@
             function draw() {
                 ctx.clearRect(0, 0, width, height);
                 time += timeStep; // Use the reduced time step
+                const scale = getScale();
 
                 skillsData.forEach(skill => {
+                    const r = skill.radius * scale;
                     // 1. Draw Orbit Line
                     ctx.beginPath();
-                    ctx.arc(center.x, center.y, skill.radius, 0, 2 * Math.PI);
+                    ctx.arc(center.x, center.y, r, 0, 2 * Math.PI);
                     ctx.strokeStyle = skill.color;
                     ctx.globalAlpha = 0.2;
                     ctx.stroke();
 
                     // 2. Calculate Planet Position
                     const angle = skill.speed * time;
-                    const x = center.x + skill.radius * Math.cos(angle);
-                    const y = center.y + skill.radius * Math.sin(angle);
+                    const x = center.x + r * Math.cos(angle);
+                    const y = center.y + r * Math.sin(angle);
                     
                     // 3. Update HTML Element Position (or draw a circle on canvas)
                     let planetElement = document.getElementById(`planet-${skill.id}`);
+                    const planetSize = Math.max(6, skill.size * Math.max(scale, 0.6));
                     if (!planetElement) {
                         planetElement = document.createElement('div');
                         planetElement.id = `planet-${skill.id}`;
                         planetElement.className = 'planet absolute';
                         planetElement.style.backgroundColor = skill.color;
-                        planetElement.style.width = `${skill.size}px`;
-                        planetElement.style.height = `${skill.size}px`;
                         planetElement.dataset.skillId = skill.id;
                         planetElement.title = skill.name;
                         
                         planetElement.addEventListener('click', () => showSkillDetails(skill.id));
+                        // Hover on desktop (and devices that fire mouse events) shows just the name label
+                        planetElement.addEventListener('mouseenter', () => { hoveredSkillId = skill.id; });
+                        planetElement.addEventListener('mouseleave', () => {
+                            if (hoveredSkillId === skill.id) hoveredSkillId = null;
+                        });
                         container.appendChild(planetElement);
                     }
+                    planetElement.style.width = `${planetSize}px`;
+                    planetElement.style.height = `${planetSize}px`;
                     
                     // Update position
-                    planetElement.style.left = `${x - skill.size / 2}px`;
-                    planetElement.style.top = `${y - skill.size / 2}px`;
+                    planetElement.style.left = `${x - planetSize / 2}px`;
+                    planetElement.style.top = `${y - planetSize / 2}px`;
+
+                    // Keep the hover label glued to its planet as it orbits
+                    if (hoveredSkillId === skill.id) {
+                        if (!hoverLabelEl || !hoverLabelEl.isConnected) {
+                            hoverLabelEl = document.createElement('div');
+                            hoverLabelEl.className = 'planet-label';
+                            container.appendChild(hoverLabelEl);
+                        }
+                        hoverLabelEl.textContent = skill.name;
+                        hoverLabelEl.style.left = `${x}px`;
+                        hoverLabelEl.style.top = `${y}px`;
+                        hoverLabelEl.style.display = 'block';
+                    }
                 });
+
+                if (hoveredSkillId === null && hoverLabelEl) {
+                    hoverLabelEl.style.display = 'none';
+                }
 
                 requestAnimationFrame(draw);
             }
@@ -775,19 +1051,45 @@
                     skillsetUl.appendChild(li);
                 });
 
+                // Highlight which planet is selected (mobile-friendly label since title= tooltips don't show on tap).
+                // Reuses the same hover-tracking mechanism so the label follows the planet as it orbits.
+                if (window.innerWidth < 768) {
+                    hoveredSkillId = skillId;
+                }
+
                 // Show the panel
                 detailPanel.classList.add('visible');
                 // *** Shift the galaxy to the left ***
                 if (window.innerWidth >= 1024) { // Only shift on desktop/tablet views
                     container.classList.add('shifted');
+                } else if (window.innerWidth < 1024) {
+                    // On mobile/tablet, the panel sits below the galaxy — scroll it into view
+                    setTimeout(() => detailPanel.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 50);
                 }
             }
 
             window.hideSkillDetails = function() {
                 detailPanel.classList.remove('visible');
+                hoveredSkillId = null;
                 // *** Remove the shift from the galaxy ***
                 container.classList.remove('shifted');
             }
+
+            // Add click listener to close button
+            const skillCloseBtn = document.getElementById('skill-panel-close');
+            if (skillCloseBtn) {
+                skillCloseBtn.addEventListener('click', hideSkillDetails);
+            }
+
+            // Scrolling away should clear the hover/tap label and close the open
+            // detail panel, on both mobile and desktop — same behavior as the
+            // Personal Projects panel.
+            window.addEventListener('scroll', () => {
+                hoveredSkillId = null;
+                if (detailPanel.classList.contains('visible')) {
+                    hideSkillDetails();
+                }
+            });
             
             // Initialize with a default view for the panel
             const defaultSkill = skillsData.find(s => s.id === 8);
@@ -838,7 +1140,7 @@ const projects = [
     name: "Physics-Informed Neural Networks for Nonlinear Cantilever Beam Analysis",
     desc: [
 "Leveraged PyTorch to implement Physics-Informed Neural Networks (PINNs) for analyzing a nonlinear cantilever beam system.",
-"Compared results from the neural network model with finite element analysis, improving understanding and accuracy of the beam’s behavior.",
+"Compared results from the neural network model with finite element analysis, improving understanding and accuracy of the beam's behavior.",
 "Conducted comparative study of Galerkin Method vs PINN for solving the nonlinear exact equation of deflection of an elastic beam.",
     ],
     link: "https://drive.google.com/file/d/1Te4KKJRomf0d3niqzYLglT0MFMBjtjDr/view"
@@ -883,9 +1185,6 @@ const projects = [
   ],
   link: "https://github.com/purvi1508/Multimodal-Therapy-Assistant"
 }
-
-
-
 ];
 
 
@@ -905,18 +1204,24 @@ projects.forEach((p, i) => {
   helix.appendChild(node);
 });
 
-// Animate nodes (DNA spiral)
+// Animate nodes (DNA spiral) - responsive radius/spacing based on container width
 function renderHelix() {
   const nodes = document.querySelectorAll(".helix-node");
   const scrollY = window.scrollY * 0.002;
+  const isMobile = window.innerWidth < 768;
+  const nodeHalf = isMobile ? 50 : 70;
+  const spiralRadius = isMobile ? Math.max(40, helix.clientWidth / 2 - nodeHalf - 10) : 220;
+  const verticalStep = isMobile ? 140 : 200;
+  const centerX = helix.clientWidth / 2 - nodeHalf;
+
   nodes.forEach((node, i) => {
     const angle = scrollY + i * 0.8;
-    const x = Math.cos(angle) * 220 + (helix.clientWidth/2 - 70);
-    const y = i * 200;
+    const x = Math.cos(angle) * spiralRadius + centerX;
+    const y = i * verticalStep;
     const z = Math.sin(angle) * 100;
 
     node.style.top = y + "px";
-    node.style.left = x + "px";
+    node.style.left = Math.max(0, x) + "px";
     node.style.zIndex = Math.floor(1000 + z);
     node.style.opacity = 0.7 + (z/200);
   });
@@ -973,12 +1278,11 @@ closeBtn.addEventListener("click", () => {
   panel.classList.add("hidden");
 });
 
-// Auto-close when scrolling beyond the section
+// Auto-close as soon as the user scrolls up or down while the panel is open
 window.addEventListener("scroll", () => {
-  const rect = helix.getBoundingClientRect();
-  if (rect.bottom < 0 || rect.top > window.innerHeight) {
+  if (!panel.classList.contains("hidden")) {
     panel.classList.add("hidden");
   }
 });
     </script>
-</body>
+</body></html>
