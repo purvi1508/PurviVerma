@@ -1,1254 +1,1613 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Purvi Verma // The Researcher's Observatory</title>
-    <!-- Inter for Interface Clarity, Crimson Text for Academic Weight -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;500;700;900&family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        :root {
-            --bg-dark: #0A192F; /* Deep Night Blue (Observatory Sky) */
-            --primary-surface: #112240; /* Slightly Lighter Module Surface */
-            --accent-teal: #64FFDA; /* Neon/Cyan Glow */
-            --accent-violet: #C77AD6; /* Orbital/Discovery Color */
-            --text-light: #CCD6F6; /* Main Text */
-            --text-dim: #8892B0; /* Subtext */
-            --font-serif: 'Crimson Text', serif;
-            --font-sans: 'Inter', sans-serif;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Purvi Verma — Civil Engineering → AI Research</title>
+<meta name="description" content="Purvi Verma — Civil engineering graduate from IIT Bhubaneswar working across computational mechanics, AI safety, and data-driven modeling.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,500;0,600;1,500;1,600&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<style>
+  :root{
+    --bg: #12141c;
+    --bg-soft: #191c26;
+    --coral: #ff6b4a;
+    --gold: #f2b84b;
+    --blueprint: #5fd4d0;
+    --ink: #3a5a78;
+    --text: #f5f1ea;
+    --text-dim: #9aa0ae;
+    --grid-minor: rgba(95,212,208,0.035);
+    --grid-major: rgba(95,212,208,0.07);
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background-color: var(--bg);
+    background-image:
+      repeating-linear-gradient(0deg, var(--grid-minor) 0 1px, transparent 1px 8px),
+      repeating-linear-gradient(90deg, var(--grid-minor) 0 1px, transparent 1px 8px),
+      repeating-linear-gradient(0deg, var(--grid-major) 0 1px, transparent 1px 42px),
+      repeating-linear-gradient(90deg, var(--grid-major) 0 1px, transparent 1px 42px);
+    background-attachment: fixed;
+    color: var(--text);
+    font-family:'Space Grotesk', sans-serif;
+    overflow-x:hidden;
+  }
+  ::selection{ background: var(--coral); color:var(--bg); }
 
-        body {
-            font-family: var(--font-sans);
-            background-color: var(--bg-dark);
-            color: var(--text-light);
-            scroll-behavior: smooth;
-            overflow-x: hidden;
-        }
+  /* ---------- drafting corner registration marks ---------- */
+  .reg-mark{
+    position:fixed; width:22px; height:22px; pointer-events:none; z-index:400; opacity:.5;
+  }
+  .reg-mark::before, .reg-mark::after{ content:''; position:absolute; background: var(--blueprint); }
+  .reg-mark::before{ width:100%; height:1px; top:50%; left:0; }
+  .reg-mark::after{ width:1px; height:100%; left:50%; top:0; }
+  .reg-tl{ top:18px; left:18px; }
+  .reg-tr{ top:18px; right:18px; }
+  .reg-bl{ bottom:18px; left:18px; }
+  .reg-br{ bottom:18px; right:18px; }
+  @media (max-width: 800px){ .reg-mark{ display:none; } }
 
-        .crimson { font-family: var(--font-serif); }
-        .text-teal-accent { color: var(--accent-teal); }
+  /* ---------- section sheet numbering (blueprint drawing-set index) ---------- */
+  .sheet-label{
+    position:absolute; top:2.4rem; right:6vw; font-size:.68rem; letter-spacing:.14em;
+    color: var(--text-dim); font-family:'Space Grotesk'; font-weight:600; text-transform:uppercase;
+    opacity:.7; text-align:right;
+  }
+  .sheet-label b{ color: var(--blueprint); font-weight:600; }
+  @media (max-width: 800px){ .sheet-label{ display:none; } }
 
-        /* General UI Styling */
-        .section-padding { padding: 40px 0; }
-        .module-card {
-            background-color: var(--primary-surface);
-            border: 1px solid rgba(100, 255, 218, 0.1);
-            transition: all 0.3s ease;
-        }
-        .module-card:hover {
-            box-shadow: 0 0 20px rgba(100, 255, 218, 0.2);
-            transform: translateY(-5px);
-        }
+  /* ---------- section icons ---------- */
+  .section-tag{ display:flex; align-items:center; gap:.55rem; }
+  .section-tag svg{ width:20px; height:20px; flex-shrink:0; stroke: var(--coral); fill:none; stroke-width:1.6; stroke-linecap:round; stroke-linejoin:round; }
 
-        /* HEADER */
-        .header-glow {
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5), 0 0 10px rgba(100, 255, 218, 0.1);
-            backdrop-filter: blur(10px);
-            background-color: rgba(10, 25, 47, 0.95);
-        }
-        .nav-link:hover { color: var(--accent-teal) !important; }
-        .cta-button {
-            border: 1px solid var(--accent-teal);
-            color: var(--accent-teal) !important;
-            background: transparent;
-            transition: all 0.3s ease;
-        }
-        .cta-button:hover { background-color: rgba(100, 255, 218, 0.1); }
+  /* ---------- card drafting corner brackets on hover ---------- */
+  .proj-card, .cert-card, .art-card{ position:relative; }
+  .proj-card::before, .proj-card::after,
+  .cert-card::before, .cert-card::after,
+  .art-card::before, .art-card::after{
+    content:''; position:absolute; width:14px; height:14px; opacity:0; transition: opacity .25s;
+    border-color: var(--coral); pointer-events:none;
+  }
+  .proj-card::before, .cert-card::before, .art-card::before{ top:8px; left:8px; border-top:1.5px solid; border-left:1.5px solid; }
+  .proj-card::after, .cert-card::after, .art-card::after{ bottom:8px; right:8px; border-bottom:1.5px solid; border-right:1.5px solid; }
+  .proj-card:hover::before, .proj-card:hover::after,
+  .cert-card:hover::before, .cert-card:hover::after,
+  .art-card:hover::before, .art-card:hover::after{ opacity:.8; }
+  .cert-card::before, .cert-card::after{ border-color: var(--blueprint); }
 
-        /* Mobile nav toggle - hidden on desktop */
-        #nav-toggle { display: none; }
-        #main-nav { display: flex; }
+  /* ---------- hero ---------- */
+  #hero-pin{
+    position:relative; height:180vh; /* scroll distance the morph plays out over */
+  }
+  #hero{
+    position:sticky; top:0; height:100vh; width:100%;
+    display:flex; flex-direction:column; align-items:flex-start; justify-content:flex-end;
+    padding: 4vw 6vw;
+    overflow:hidden;
+  }
+  @media (max-width: 800px){
+    #hero-pin{ height:100vh; }
+    #hero{ position:relative; }
+  }
+  #bg-canvas{ position:absolute; inset:0; z-index:0; width: 100%; height: 100%; display: block; }
+  .hero-inner{ position:relative; z-index:2; max-width: 50%; }
+  .eyebrow{
+    font-family:'Space Grotesk'; font-weight:600; letter-spacing:.18em; text-transform:uppercase;
+    font-size:.75rem; color: var(--blueprint); margin-bottom:1.1rem; display:flex; align-items:center; gap:.6rem;
+  }
+  .eyebrow::before{ content:''; width:26px; height:1px; background: var(--blueprint); display:inline-block; }
+  h1.name{
+    font-family:'Fraunces', serif; font-weight:500; font-style:italic;
+    font-size: clamp(2.6rem, 7vw, 5.6rem); line-height:1.02; color: var(--text);
+  }
+  h1.name em{ font-style:normal; font-weight:600; color: var(--coral); font-style:italic; }
+  .tagline{
+    margin-top:1.4rem; font-size: clamp(1rem, 1.6vw, 1.25rem); color: var(--text-dim); max-width:560px; line-height:1.6;
+  }
+  .hero-cta{ margin-top:2.2rem; display:flex; gap:1rem; align-items:center; flex-wrap:wrap; }
+  .btn{
+    font-family:'Space Grotesk'; font-weight:600; font-size:.85rem; letter-spacing:.03em;
+    padding:.9rem 1.6rem; border-radius:2px; text-decoration:none; transition: transform .25s cubic-bezier(.2,.9,.3,1.3), background .2s;
+    display:inline-block;
+  }
+  .btn-primary{ background: var(--coral); color:var(--bg); }
+  .btn-primary:hover{ transform: translateY(-3px); background: var(--gold); }
+  .btn-ghost{ border:1px solid var(--ink); color: var(--text); background:transparent; }
+  .btn-ghost:hover{ transform: translateY(-3px); border-color: var(--blueprint); color: var(--blueprint); }
 
-        @media (max-width: 767px) {
-            #nav-toggle {
-                display: inline-flex;
-                background: transparent;
-                border: 1px solid var(--accent-teal);
-                color: var(--accent-teal);
-                padding: 6px 10px;
-                border-radius: 4px;
-                font-size: 1rem;
-            }
-            #main-nav {
-                display: none;
-                position: absolute;
-                top: 100%;
-                left: 0;
-                right: 0;
-                flex-direction: column;
-                background-color: var(--primary-surface);
-                padding: 1rem;
-                gap: 0.75rem;
-                border-bottom: 1px solid rgba(100,255,218,0.2);
-            }
-            #main-nav.open { display: flex; }
-            #main-nav a.cta-button { display: inline-block; width: fit-content; }
-        }
+  .scroll-cue{
+    position:absolute; bottom: 2.4rem; right: 6vw; z-index:2; font-size:.7rem; color: var(--text-dim);
+    display:flex; flex-direction:column; align-items:center; gap:.5rem; letter-spacing:.15em;
+  }
+  .scroll-cue .line{ width:1px; height:36px; background: linear-gradient(var(--blueprint), transparent); animation: pulse 1.8s infinite; }
+  @keyframes pulse{ 0%,100%{opacity:.3} 50%{opacity:1} }
 
-        /* Scroll Reveal (Standard Fade-Up) */
-        .hidden-scroll { opacity: 0; transform: translateY(30px); transition: all 1s ease-out; }
-        .hidden-scroll.visible { opacity: 1; transform: translateY(0); }
+  .state-label{
+    position:absolute; top:6rem; right:6vw; z-index:2; font-size:.72rem; letter-spacing:.14em; text-transform:uppercase;
+    color: var(--text-dim); text-align:right; font-family:'Space Grotesk'; font-weight:600;
+  }
+  .state-label .a{ color: var(--blueprint); }
+  .state-label .b{ color: var(--coral); }
 
-        /* Timeline Specific Styling */
-        .timeline-container {
-            grid-template-columns: 1fr 2px 1fr; /* 3-column layout: Left Content | Line | Right Content */
-        }
-        .timeline-line {
-            grid-column: 2 / 3;
-            background-color: var(--text-dim);
-            width: 2px;
-            position: absolute;
-            height: 100%;
-            left: 50%;
-            transform: translateX(-1px);
-        }
-        .timeline-marker {
-            width: 16px;
-            height: 16px;
-            border-radius: 50%;
-            border: 3px solid var(--bg-dark); /* Ensure marker is visible over the line */
-            background-color: var(--text-light);
-            z-index: 1;
-            /* Positioning for 3-column grid */
-            grid-column: 2 / 3;
-            margin: auto;
-        }
-        /* Left content positioning */
-        .timeline-container > .flex-row-reverse > .module-card {
-            grid-column: 1 / 2;
-            margin-right: 1.5rem; /* Space between card and line */
-        }
-        /* Right content positioning */
-        .timeline-container > .flex:not(.flex-row-reverse) > .module-card {
-            grid-column: 3 / 4;
-            margin-left: 1.5rem; /* Space between card and line */
-        }
-        /* Mobile View (Stacking) */
-        @media (max-width: 767px) {
-            .timeline-container {
-                display: block !important; /* simple vertical stack — must beat Tailwind's .grid utility regardless of injection order */
-                row-gap: 0;
-            }
-            /* Row wrappers just become normal stacked blocks; the inner module-card
-               and timeline-marker no longer need separate grid placement. */
-            .timeline-container > .flex,
-            .timeline-container > .flex-row-reverse {
-                display: block !important;
-            }
-            .timeline-line {
-                display: block !important; /* override Tailwind's "hidden" class — the line was never rendering on mobile at all */
-                left: 5px; /* Move line to the far left, aligned with the dots */
-                transform: none;
-                background: linear-gradient(to bottom, rgba(100,255,218,0.5), rgba(199,122,214,0.5));
-                width: 2px;
-            }
-            /* The original marker dot relied on grid alignment to land next to its card,
-               which drifted because every card has a different internal height (some have
-               a GitHub/Doc button row, some don't). Hide it and draw the dot instead as a
-               ::before on the card itself — that ties it permanently to a fixed offset from
-               THAT card's own top edge, so it can never drift relative to the wrong card. */
-            .timeline-marker {
-                display: none !important;
-            }
-            .timeline-container > .flex-row-reverse > .module-card,
-            .timeline-container > .flex:not(.flex-row-reverse) > .module-card,
-            .timeline-container > div > .module-card {
-                margin-left: 1.4rem !important;
-                margin-right: 0 !important;
-                margin-top: 0 !important;
-                margin-bottom: 1.4rem !important;
-                border-radius: 12px !important;
-                position: relative !important;
-                width: auto !important;
-                max-width: none !important;
-            }
-            .timeline-container .module-card::before {
-                content: '';
-                position: absolute;
-                left: -1.3rem;
-                top: 1.3rem;
-                width: 12px;
-                height: 12px;
-                border-radius: 50%;
-                background-color: var(--text-light);
-                border: 3px solid var(--bg-dark);
-                box-shadow: 0 0 10px rgba(100,255,218,0.6);
-                z-index: 2;
-            }
-            #timeline h2 { margin-bottom: 1.75rem !important; font-size: 1.85rem !important; }
-            #timeline { padding: 28px 0 !important; }
-        }
-.helix-node {
-  position: absolute;
-  width: 140px;
-  height: 140px;
-  border-radius: 50%;
-  background: rgba(100,255,218,0.15);
-  border: 2px solid rgba(100,255,218,0.6);
+  /* ---------- real-time diagnostic hud overlay ---------- */
+  .hud-panel{
+    position:absolute; top:9rem; left:6vw; z-index:10; font-family:'Space Grotesk'; font-size:.65rem;
+    color: var(--text-dim); border: 1px dashed var(--ink); padding: .8rem 1.1rem; border-radius: 4px;
+    background: rgba(18, 20, 28, 0.65); backdrop-filter: blur(4px); pointer-events: none;
+    max-width: 250px; display: flex; flex-direction: column; gap: .4rem; line-height: 1.4;
+  }
+  .hud-title{ color: var(--blueprint); font-weight:700; letter-spacing:.1em; margin-bottom:.2rem; text-transform:uppercase; display:flex; align-items:center; gap:.4rem; }
+  .hud-title::after{ content:''; display:inline-block; width:6px; height:6px; background:var(--coral); border-radius:50%; animation: blink 1.2s infinite; }
+  .hud-row{ display:flex; justify-content:space-between; gap:1.5rem; }
+  .hud-val{ font-weight: 600; color: var(--text); font-family: monospace; }
+  @keyframes blink{ 50%{opacity:0} }
+  
+  @media (max-width: 1024px){ 
+    .hud-panel{ display:none; } 
+    .hero-inner{ max-width: 100%; }
+  }
+
+  /* ---------- sections ---------- */
+  section{ padding: 8rem 6vw; position:relative; scroll-margin-top: 5rem; }
+  .section-tag{
+    font-size:.75rem; letter-spacing:.2em; text-transform:uppercase; color: var(--coral); font-weight:600; margin-bottom:1rem;
+  }
+  h2.head{
+    font-family:'Fraunces', serif; font-weight:500; font-size: clamp(1.8rem, 4vw, 3rem); position:relative; display:inline-block; margin-bottom:2.5rem;
+  }
+  h2.head svg{ position:absolute; left:0; bottom:-10px; width:100%; height:14px; overflow:visible; }
+  h2.head path{ fill:none; stroke: var(--gold); stroke-width:3; stroke-linecap:round; stroke-dasharray: 400; stroke-dashoffset: 400; transition: stroke-dashoffset 1.1s cubic-bezier(.3,.9,.3,1); }
+  h2.head.revealed path{ stroke-dashoffset:0; }
+
+  #about, #timeline, #projects, #achievements, #certifications, #creative{
+    background-color: var(--bg-soft);
+    background-image:
+      repeating-linear-gradient(0deg, var(--grid-minor) 0 1px, transparent 1px 8px),
+      repeating-linear-gradient(90deg, var(--grid-minor) 0 1px, transparent 1px 8px),
+      repeating-linear-gradient(0deg, var(--grid-major) 0 1px, transparent 1px 42px),
+      repeating-linear-gradient(90deg, var(--grid-major) 0 1px, transparent 1px 42px);
+    background-attachment: fixed;
+  }
+  #skills{ background-color: var(--bg); }
+  
+  .about-grid{ display:grid; grid-template-columns: 1.3fr 1fr; gap:4rem; align-items:start; }
+  .about-grid p{ font-size:1.05rem; line-height:1.85; color: var(--text-dim); max-width: 640px; }
+  .about-grid p + p{ margin-top:1.2rem; }
+  .stat-block{ display:flex; flex-direction:column; gap:1.6rem; }
+  .stat{ border-left:2px solid var(--ink); padding-left:1.2rem; }
+  .stat .n{ font-family:'Fraunces'; font-size:1.6rem; color: var(--blueprint); font-style:italic; }
+  .stat .l{ font-size:.8rem; color: var(--text-dim); letter-spacing:.05em; }
+
+  /* ---------- creative layout ---------- */
+  .creative-grid{ display:grid; grid-template-columns: repeat(3, 1fr); gap:1.4rem; margin-top: 2rem; }
+.art-card{
+  aspect-ratio: 4/3; border-radius:4px; position:relative; overflow:hidden;
+  background: linear-gradient(145deg, var(--bg-soft), #22263300);
+  border:1px solid var(--ink); display:flex; flex-direction: column; align-items:center; justify-content:center; padding:1.2rem;
+  transition: transform .5s cubic-bezier(.2,.8,.2,1);
+}
+.art-frame {
   display: flex;
-  align-items: center;
   justify-content: center;
-  cursor: pointer;
-  transition: transform 0.4s ease, box-shadow 0.4s ease;
+  align-items: center;
+  width: 100%;
 }
+.art-frame img {
+  display: block;
+  margin: 0 auto;
+}
+  .art-card:hover{ transform: translateY(-10px) rotate(-1deg); }
+  .art-card .cap{ font-size:.8rem; color: var(--text-dim); letter-spacing:.04em; }
+  .art-card .n{ position:absolute; top:1rem; right:1rem; font-family:'Fraunces'; font-style:italic; color: var(--gold); opacity:.7; }
+  .art-1{ background: radial-gradient(circle at 30% 20%, #ff6b4a33, transparent 60%), var(--bg-soft); }
+  .art-2{ background: radial-gradient(circle at 70% 30%, #5fd4d033, transparent 60%), var(--bg-soft); }
+  .art-3{ background: radial-gradient(circle at 50% 70%, #f2b84b33, transparent 60%), var(--bg-soft); }
 
-.helix-node:hover {
-  transform: scale(1.1);
-  box-shadow: 0 0 25px rgba(100,255,218,0.6);
-}
+  /* ---------- scroll progress bar ---------- */
+  #scroll-progress{
+    position:fixed; top:0; left:0; height:2px; width:0%; z-index:600;
+    background: linear-gradient(90deg, var(--blueprint), var(--coral));
+    transition: width .08s linear;
+  }
 
-.helix-node span {
-  color: #64FFDA;
-  font-weight: 600;
-  text-align: center;
-  font-size: 0.9rem;
-  padding: 0 6px;
-}
+  /* ---------- staggered reveal for cards/pills ---------- */
+  [data-stagger]{ opacity:0; transform: translateY(18px); transition: opacity .55s ease, transform .55s ease; }
+  [data-stagger].revealed{ opacity:1; transform: translateY(0); }
 
-.project-link {
-  color: #64FFDA;
-  font-weight: 500;
-  transition: color 0.3s;
-}
-.project-link:hover {
-  color: #00e6b8;
-}
+  /* ---------- sticky nav ---------- */
+  #nav{
+    position:fixed; top:0; left:0; right:0; z-index:500;
+    display:flex; align-items:center; justify-content:space-between;
+    padding: 1.3rem 6vw; background: transparent;
+    transition: background .35s, padding .35s, border-color .35s;
+    border-bottom:1px solid transparent;
+  }
+  #nav.scrolled{ background: rgba(18,20,28,0.85); backdrop-filter: blur(10px); padding: 0.9rem 6vw; border-color: var(--ink); }
+  #nav .nav-name{ font-family:'Fraunces'; font-style:italic; font-weight:500; font-size:1.05rem; color: var(--text); text-decoration:none; }
+  #nav .nav-links{ display:flex; align-items:center; gap:1.8rem; }
+  #nav .nav-links a{ font-size:.78rem; letter-spacing:.06em; text-transform:uppercase; color: var(--text-dim); text-decoration:none; transition: color .2s; position:relative; }
+  #nav .nav-links a:hover{ color: var(--text); }
+  #nav .nav-links a.active{ color: var(--coral); }
+  #nav .nav-resume{
+    font-family:'Space Grotesk'; font-weight:600; font-size:.76rem; letter-spacing:.04em;
+    padding:.55rem 1.15rem; border:1px solid var(--blueprint); color: var(--blueprint); border-radius:2px;
+    text-decoration:none; transition: all .25s;
+  }
+  #nav .nav-resume:hover{ background: var(--blueprint); color: var(--bg); }
 
-@media (max-width: 767px) {
-    .helix-node {
-        width: 100px;
-        height: 100px;
+  /* mobile nav toggle */
+  #nav-toggle{
+    display:none; background:none; border:1px solid var(--ink); color:var(--text);
+    width:40px; height:40px; border-radius:4px; cursor:pointer; position:relative; z-index:600;
+  }
+  #nav-toggle span{
+    position:absolute; left:10px; right:10px; height:2px; background:var(--text); transition: transform .25s, opacity .25s;
+  }
+  #nav-toggle span:nth-child(1){ top:13px; }
+  #nav-toggle span:nth-child(2){ top:19px; }
+  #nav-toggle span:nth-child(3){ top:25px; }
+  #nav-toggle.open span:nth-child(1){ transform: translateY(6px) rotate(45deg); }
+  #nav-toggle.open span:nth-child(2){ opacity:0; }
+  #nav-toggle.open span:nth-child(3){ transform: translateY(-6px) rotate(-45deg); }
+
+  .skills-wrap{ display:flex; flex-wrap:wrap; gap:.7rem; }
+  .pill{
+    padding:.55rem 1.1rem; border:1px solid var(--ink); border-radius:100px; font-size:.82rem;
+    color: var(--text-dim); transition: all .25s; letter-spacing:.02em;
+  }
+  .pill:hover{ border-color: var(--coral); color: var(--text); background: rgba(255,107,74,.08); }
+
+  /* ---------- tech stack (categorized) ---------- */
+  .stack-groups{ display:grid; grid-template-columns: repeat(2, 1fr); gap: 2.6rem 3rem; }
+  .stack-group .cat{ font-size:.72rem; letter-spacing:.16em; text-transform:uppercase; color: var(--blueprint); font-weight:600; margin-bottom:1rem; display:flex; align-items:center; gap:.6rem; }
+  .stack-group .cat::after{ content:''; flex:1; height:1px; background: var(--ink); }
+
+  /* ---------- timeline ---------- */
+  .timeline{ position:relative; max-width: 900px; margin-top: 1rem; }
+  .timeline::before{ content:''; position:absolute; left:14px; top:6px; bottom:6px; width:1px; background: linear-gradient(var(--blueprint), var(--coral)); }
+  .t-item{ position:relative; padding-left: 3.6rem; margin-bottom: 3rem; }
+  .t-item:last-child{ margin-bottom:0; }
+  .t-dot{ position:absolute; left:6px; top:4px; width:17px; height:17px; border-radius:50%; background: var(--bg-soft); border:2px solid var(--blueprint); }
+  .t-item.is-ai .t-dot{ border-color: var(--coral); }
+  .t-year{ font-family:'Fraunces'; font-style:italic; color: var(--gold); font-size:1.1rem; margin-bottom:.3rem; }
+  .t-role{ font-weight:600; font-size:1.05rem; margin-bottom:.2rem; }
+  .t-org{ color: var(--text-dim); font-size:.85rem; margin-bottom:.6rem; }
+  .t-desc{ color: var(--text-dim); font-size:.92rem; line-height:1.6; max-width:600px; }
+
+  /* ---------- projects ---------- */
+  .projects-grid{ display:grid; grid-template-columns: repeat(2, 1fr); gap: 1.6rem; }
+  .proj-card{
+    border:1px solid var(--ink); border-radius:6px; padding:1.8rem; position:relative;
+    background: var(--bg-soft); transform-style: preserve-3d; transition: transform .12s ease-out, border-color .3s;
+    overflow:hidden;
+  }
+  .proj-card:hover{ border-color: var(--coral); }
+  .proj-card .glow{ position:absolute; inset:0; background: radial-gradient(circle at var(--mx,50%) var(--my,50%), rgba(255,107,74,.10), transparent 60%); opacity:0; transition:opacity .3s; pointer-events:none; }
+  .proj-card:hover .glow{ opacity:1; }
+  .proj-top{ display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:1rem; }
+  .proj-title{ font-family:'Fraunces'; font-size:1.35rem; font-style:italic; }
+  .proj-links{ display:flex; gap:.8rem; }
+  .proj-links a{ color: var(--blueprint); font-size:.78rem; text-decoration:none; letter-spacing:.03em; }
+  .proj-links a:hover{ color: var(--coral); }
+  .proj-desc{ color: var(--text-dim); font-size:.9rem; line-height:1.6; margin-bottom:1.2rem; }
+  .proj-tags{ display:flex; flex-wrap:wrap; gap:.5rem; }
+  .tag{ font-size:.72rem; padding:.28rem .7rem; border-radius:100px; background: rgba(95,212,208,.08); color: var(--blueprint); letter-spacing:.02em; }
+  .proj-featured{ grid-column: 1 / -1; }
+
+  /* ---------- achievements ---------- */
+  .ach-row{ display:grid; grid-template-columns: repeat(4, 1fr); gap:1.4rem; }
+  .ach-card{ border-left:2px solid var(--gold); padding:1rem 0 1rem 1.3rem; }
+  .ach-num{ font-family:'Fraunces'; font-style:italic; font-size:1.9rem; color: var(--gold); line-height:1; margin-bottom:.5rem; }
+  .ach-label{ font-size:.85rem; color: var(--text); font-weight:600; margin-bottom:.3rem; }
+  .ach-sub{ font-size:.78rem; color: var(--text-dim); line-height:1.5; }
+
+  /* ---------- certifications ---------- */
+  .cert-grid{ display:grid; grid-template-columns: repeat(3, 1fr); gap:1.2rem; }
+  .cert-card{
+    border:1px solid var(--ink); border-radius:6px; padding:1.4rem; display:flex; gap:1rem; align-items:flex-start;
+    transition: transform .3s, border-color .3s;
+    background: var(--bg-soft);
+  }
+  .cert-card:hover{ transform: translateY(-6px); border-color: var(--blueprint); }
+  .cert-badge{ width:38px; height:38px; border-radius:50%; border:1.5px solid var(--blueprint); flex-shrink:0; display:flex; align-items:center; justify-content:center; font-family:'Fraunces'; font-style:italic; color: var(--blueprint); font-size:.95rem; }
+  .cert-name{ font-weight:600; font-size:.92rem; margin-bottom:.2rem; }
+  .cert-meta{ font-size:.76rem; color: var(--text-dim); }
+
+  footer{ padding: 4rem 6vw; border-top:1px solid var(--ink); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; }
+  footer .f-name{ font-family:'Fraunces'; font-style:italic; color: var(--text-dim); }
+  footer a{ color: var(--blueprint); text-decoration:none; font-size:.85rem; }
+
+  /* Text contrast bump for small/dim text — improves WCAG AA at small sizes */
+  .cap, .t-desc, .cert-meta, .ach-sub{ color: #aeb4c0; }
+
+  @media (max-width: 1024px){
+    .hero-inner{ max-width: 100%; }
+    .about-grid{ grid-template-columns:1fr; }
+    .creative-grid{ grid-template-columns: repeat(2,1fr); }
+    .stack-groups{ grid-template-columns: 1fr; }
+    .projects-grid{ grid-template-columns: 1fr; }
+    .ach-row{ grid-template-columns: repeat(2,1fr); }
+    .cert-grid{ grid-template-columns: 1fr; }
+    .state-label{ display:none; }
+
+    #nav-toggle{ display:block; }
+    #nav .nav-links{
+      display:flex; position:fixed; top:0; right:0; height:100vh; width:min(78vw, 320px);
+      background: rgba(18,20,28,0.98); backdrop-filter: blur(10px);
+      flex-direction:column; align-items:flex-start; justify-content:center; gap:1.6rem;
+      padding: 2rem 2.2rem; transform: translateX(100%); transition: transform .35s cubic-bezier(.2,.8,.2,1);
+      border-left:1px solid var(--ink); z-index:550;
     }
-    .helix-node span {
-        font-size: 0.7rem;
-    }
-    #project-panel {
-        right: 1rem !important;
-        left: 1rem !important;
-        width: auto !important;
-        transform: translateY(-50%) !important;
-    }
+    #nav .nav-links.open{ transform: translateX(0); }
+    #nav .nav-links a{ font-size:1rem; }
+    #nav .nav-resume{ display:none; }
+    #nav .nav-links .nav-resume-mobile{ display:inline-block; margin-top:1rem; }
+  }
+
+  /* ---------- sketchpad (the only place the pen works) ---------- */
+  .pad-intro{ color: var(--text-dim); font-size:.95rem; max-width:560px; margin-bottom:1.6rem; line-height:1.6; }
+  .sketchpad{
+    border:1px solid var(--ink); border-radius:8px; overflow:hidden; margin-bottom:2.6rem;
+    background: var(--bg-soft);
+  }
+  .pad-toolbar{
+    display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:1rem;
+    padding:1rem 1.3rem; border-bottom:1px solid var(--ink);
+  }
+  .pad-colors{ display:flex; align-items:center; gap:.6rem; }
+  .swatch{
+    width:26px; height:26px; border-radius:50%; border:2px solid transparent; background: var(--sw);
+    cursor:pointer; padding:0; transition: transform .15s, border-color .15s; flex-shrink:0;
+  }
+  .swatch:hover{ transform: scale(1.12); }
+  .swatch.active{ border-color: var(--text); transform: scale(1.15); }
+  .swatch-custom{ width:26px; height:26px; border:none; padding:0; background:none; cursor:pointer; flex-shrink:0; }
+  .swatch-custom::-webkit-color-swatch-wrapper{ padding:0; border-radius:50%; }
+  .swatch-custom::-webkit-color-swatch{ border:2px solid var(--ink); border-radius:50%; }
+  .pad-tools{ display:flex; align-items:center; gap:.9rem; flex-wrap:wrap; }
+  .pad-size-label{
+    display:flex; align-items:center; gap:.5rem; font-size:.72rem; color: var(--text-dim);
+    letter-spacing:.05em; text-transform:uppercase;
+  }
+  .pad-btn{
+    font-family:'Space Grotesk'; font-size:.76rem; font-weight:600; letter-spacing:.03em;
+    padding:.5rem .9rem; border-radius:2px; border:1px solid var(--ink); background:transparent;
+    color: var(--text-dim); cursor:pointer; transition: all .2s;
+  }
+  .pad-btn:hover{ border-color: var(--blueprint); color: var(--text); }
+  .pad-btn.active{ background: var(--coral); border-color: var(--coral); color: var(--bg); }
+  .pad-btn-primary{ border-color: var(--blueprint); color: var(--blueprint); }
+  .pad-btn-primary:hover{ background: var(--blueprint); color: var(--bg); }
+  .pad-btn:disabled{ opacity:.5; cursor:default; }
+
+  .pad-canvas-wrap{
+    position:relative; width:100%; aspect-ratio: 16/8;
+    background:
+      repeating-linear-gradient(0deg, rgba(58,90,120,0.14) 0 1px, transparent 1px 28px),
+      #f2ede1;
+    cursor: none; /* custom cursor mapped inside */
+  }
+  #padCanvas{ width:100%; height:100%; display:block; touch-action:none; }
+  .pad-cursor{
+    position:absolute; border-radius:50%; border:1.5px solid rgba(18,20,28,.6);
+    background: rgba(18,20,28,.08); pointer-events:none; transform:translate(-50%,-50%); display:none;
+    z-index: 10;
+  }
+  .pad-hint{
+    position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+    color:#8f8672; font-family:'Fraunces'; font-style:italic; font-size:1rem; letter-spacing:.02em;
+    pointer-events:none; transition:opacity .3s;
+  }
+  .pad-hint.hidden{ opacity:0; }
+
+  @media (max-width: 800px){
+    .pad-toolbar{ flex-direction:column; align-items:flex-start; }
+    .pad-canvas-wrap{ aspect-ratio: 4/5; cursor:auto; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation: none !important; transition: none !important; }
+  }
+.creative-grid {
+  display: grid;
+  place-items: center;      /* CHANGE: Center both horizontally and vertically */
 }
 
-        /* Skill Galaxy Specific Styles */
-        #galaxy-container {
-            position: relative;
-            width: 100%;
-            height: 700px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden; 
-            transition: all 0.5s ease; 
-        }
-        
-        /* New CSS for shifting all internal galaxy elements */
-        #galaxy-container.shifted > .sun,
-        #galaxy-container.shifted > .planet {
-            transition: transform 0.5s ease;
-            transform: translateX(-180px); /* Shift planets and sun left */
-        }
-        #galaxy-container.shifted #galaxy-canvas {
-            transition: transform 0.5s ease;
-            transform: translateX(-180px); /* Shift canvas content left */
-        }
-        /* End New CSS */
-        
-        #galaxy-canvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-            z-index: 1;
-        }
 
-        /* Sun (Core) Style - BALANCED SIZE */
-        .sun {
-            position: absolute;
-            background: radial-gradient(circle, #FFD700 0%, #FFA500 70%, #C77AD6 100%);
-            width: 100px; 
-            height: 100px; 
-            border-radius: 50%;
-            box-shadow: 0 0 50px rgba(255, 165, 0, 0.8), 0 0 100px rgba(255, 215, 0, 0.4);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            font-weight: 700;
-            z-index: 10;
-            color: var(--bg-dark);
-            text-shadow: 0 0 5px white;
-            cursor: default;
-        }
-        .sun span { 
-            font-size: 1.5rem; 
-            line-height: 1.2; 
-        }
+  .art-card {
+    position: relative;
+    background: #fdfcf8;
+    border: 1px solid var(--line);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.35s ease, box-shadow 0.35s ease;
+  }
 
-        /* Node/Planet Style (Rendered via JS, but good for context) */
-        .planet {
-            position: absolute;
-            border-radius: 50%;
-            box-shadow: 0 0 15px rgba(100, 255, 218, 0.5);
-            transition: transform 0.1s ease;
-            cursor: pointer;
-            z-index: 5;
-        }
-        .planet:hover {
-            transform: scale(1.2);
-            box-shadow: 0 0 25px var(--accent-teal);
-        }
+  .art-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 18px 34px -18px rgba(23, 20, 15, 0.45);
+  }
 
-        /* Modal Panel */
-        #skill-detail-panel {
-            position: absolute;
-            top: 50%;
-            right: 2%;
-            transform: translateY(-50%);
-            width: 350px;
-            min-height: 400px;
-            background-color: var(--primary-surface);
-            border: 1px solid var(--accent-teal);
-            box-shadow: 0 0 30px rgba(100, 255, 218, 0.1);
-            z-index: 20;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.5s ease, transform 0.5s ease;
-            transform: translateY(-50%) translateX(100%);
-        }
-        #skill-detail-panel.visible {
-            opacity: 1;
-            visibility: visible;
-            transform: translateY(-50%) translateX(0);
-        }
+  .art-frame {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+    background: #0f0d0a;
+  }
 
-        @media (max-width: 1024px) {
-            #galaxy-container {
-                height: 420px;
-                /* Container must grow to fit the panel once it switches to a normal
-                   flow child below — otherwise overflow:hidden clips it and the
-                   flex centering pulls it up over the orbiting planets. */
-                flex-wrap: wrap;
-                align-content: flex-start;
-                overflow: visible;
-            }
-            .sun { width: 110px; height: 110px; }
-            .sun span { font-size: 1.1rem; }
-            #skill-detail-panel {
-                position: relative;
-                top: auto;
-                right: auto;
-                transform: none;
-                width: 90%;
-                margin: 20px auto 0;
-                min-height: auto;
-                flex-basis: 100%;
-                order: 99;
-                /* opacity/visibility intentionally NOT forced here — the panel should
-                   stay hidden until a planet is tapped (.visible class added by JS),
-                   otherwise it shows up unprompted and the Close button has nothing to undo. */
-            }
-            #skill-detail-panel:not(.visible) {
-                /* When hidden, fully remove from flow so it can't reserve space
-                   or be mistaken for visible content above the fold. */
-                display: none;
-            }
-            #skill-detail-panel.visible { transform: none; }
-            /* Disable shifting on small screens since the panel is already below the galaxy */
-            #galaxy-container.shifted > .sun,
-            #galaxy-container.shifted > .planet,
-            #galaxy-container.shifted #galaxy-canvas {
-                transform: translateX(0);
-                transition: none;
-            }
-        }
+  .art-frame img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    filter: grayscale(15%) contrast(1.04);
+    transition: transform 0.6s ease;
+  }
 
-        @media (max-width: 767px) {
-            #hero h1 { font-size: 2.25rem !important; line-height: 1.25; }
-            #hero p { font-size: 1rem !important; }
-        }
+  .art-card:hover .art-frame img {
+    transform: scale(1.045);
+  }
 
-        /* --- TIMELINE: touch-friendly reveal --- */
-        @media (max-width: 767px) {
-            /* Tighter card padding + smaller type so each entry takes noticeably
-               less vertical room on a phone screen. */
-            #timeline .module-card { padding: 0.9rem 1rem !important; }
-            #timeline .module-card h3 { font-size: 1.05rem !important; margin: 0.35rem 0 !important; line-height: 1.3; }
-            #timeline .module-card > span.text-xs { font-size: 0.68rem !important; letter-spacing: 0.03em; }
-            #timeline .module-card .flex.space-x-2 { margin-bottom: 0.4rem !important; justify-content: flex-start !important; }
-            #timeline .module-card .flex.space-x-2 a { padding: 0.2rem 0.55rem !important; font-size: 0.68rem !important; }
-            #timeline .timeline-details p { font-size: 0.78rem !important; line-height: 1.5; margin-top: 0.4rem !important; }
+  .n {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    color: #f2efe6;
+    background: rgba(17, 15, 11, 0.55);
+    padding: 4px 9px;
+    z-index: 2;
+  }
 
-            /* Cut the dead space between stacked cards (see base rule above; this
-               block only adds the type/padding compression). */
-            .timeline-details {
-                /* default collapsed; JS toggles .details-open instead of relying on :hover */
-                opacity: 0;
-                max-height: 0;
-            }
-            .timeline-details.details-open {
-                opacity: 1;
-                max-height: 800px !important;
-            }
-            .timeline-toggle-hint {
-                display: inline-flex;
-                align-items: center;
-                gap: 4px;
-                cursor: pointer;
-                -webkit-tap-highlight-color: transparent;
-                font-size: 0.68rem !important;
-                margin-top: 0.5rem !important;
-            }
-            .timeline-toggle-hint i { transition: transform 0.3s ease; font-size: 0.65rem; }
-            .timeline-toggle-hint.open i { transform: rotate(180deg); }
-        }
-        @media (min-width: 768px) {
-            /* desktop keeps the original hint text, no chevron, no JS toggle needed */
-            .timeline-toggle-hint i { display: none; }
-        }
+  .cap {
+    font-style: italic;
+    font-size: 1.05rem;
+    line-height: 1.4;
+    padding: 18px 20px 22px;
+    border-top: 1px solid var(--line);
+    color: #2c2a24;
+  }
+.creative-grid img {
+  max-width: 200px;      /* Adjust as needed */
+  max-height: 200px;     /* Adjust as needed */
+  width: 100%;
+  height: auto;
+  object-position: center center; 
+  object-fit: cover;     /* Use 'contain' if you want the whole image visible */
+  display: block;
+}
 
-        /* Planet name label: shown on hover (desktop) and on tap (mobile), since
-           the title= tooltip is unreliable on touch and easy to miss on desktop too. */
-        .planet-label {
-            position: absolute;
-            font-size: 0.7rem;
-            color: var(--text-light);
-            background: rgba(10,25,47,0.9);
-            border: 1px solid rgba(100,255,218,0.4);
-            padding: 2px 7px;
-            border-radius: 4px;
-            white-space: nowrap;
-            pointer-events: none;
-            transform: translate(-50%, -130%);
-            z-index: 15;
-        }
+.creative-grid img:hover {
+  transform: scale(1.8) !important;
+  z-index: 100 !important;
+  position: relative;
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4);
+  transition: transform 0.4s ease;
+}
 
-        /* --- SKILL GALAXY: mobile tuning --- */
-        @media (max-width: 767px) {
-            #galaxy-container { height: 380px; }
-            .sun { width: 100px; height: 100px; }
-            .sun span { font-size: 0.85rem; line-height: 1.15; padding: 0 6px; display: inline-block; }
-            .planet { min-width: 14px; min-height: 14px; }
-            #skill-detail-panel {
-                width: 100%;
-                margin: 16px 0 0 0;
-                padding: 1.25rem;
-            }
-            #skill-detail-panel h3 { font-size: 1.25rem; }
-            .planet-label { font-size: 0.6rem; padding: 1px 5px; }
+/* Ensure text elements stay below zoomed image */
+.creative-grid .text-overlay,
+.creative-grid h3,
+.creative-grid p,
+.creative-grid .caption {
+  position: relative;
+  z-index: 2;
+  pointer-events: none; /* Allow hover to pass through to image */
+}
 
-            /* Certifications mobile 2-column optimization */
-            #certifications .grid { gap: 1rem !important; }
-            #certifications .cert-card { 
-                padding: 1rem !important; 
-            }
-            #certifications .cert-card img { 
-                width: 80px !important; 
-                height: 64px !important; 
-                margin-bottom: 0.75rem !important;
-            }
-            #certifications .cert-card h3 { 
-                font-size: 0.95rem !important; 
-                line-height: 1.2 !important;
-                margin-bottom: 0.4rem !important;
-            }
-            #certifications .cert-card > p:nth-of-type(1) { 
-                font-size: 0.65rem !important; 
-                margin-bottom: 0.5rem !important;
-            }
-            #certifications .cert-card > p:nth-of-type(2) { 
-                font-size: 0.75rem !important; 
-                line-height: 1.4 !important;
-            }
-        }
-        
-    </style>
+.creative-grid:hover .text-overlay,
+.creative-grid:hover h3,
+.creative-grid:hover p,
+.creative-grid:hover .caption {
+  z-index: 0; /* Move text behind zoomed image on hover */
+}
+
+
+    .studio-head { flex-direction: column; align-items: flex-start; gap: 10px; }
+</style>
 </head>
-<body class="selection:bg-teal-700 selection:text-white">
+<body>
 
-    <!-- 0. Header (Architectural Bar) -->
-    <header id="navbar" class="sticky top-0 z-50 header-glow relative">
-        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
-            <a href="#hero" class="text-xl font-bold text-light flex items-center">
-                <i class="fas fa-satellite-dish text-teal-accent mr-3"></i> Purvi Verma 
-            </a>
-            <button id="nav-toggle" aria-label="Toggle navigation">
-                <i class="fas fa-bars"></i>
-            </button>
-            <nav id="main-nav" class="space-x-6 md:flex md:space-x-6">
-                <a href="#skill-galaxy" class="nav-link text-sm text-text-dim hover:text-teal-accent transition-colors">Skill Galaxy</a>
-                <a href="#timeline" class="nav-link text-sm text-text-dim hover:text-teal-accent transition-colors">Professional Timeline</a>
-                <a href="#certifications" class="nav-link text-sm text-text-dim hover:text-teal-accent transition-colors">Certifications</a>
-                <a href="#projects" class="nav-link text-sm text-text-dim hover:text-teal-accent transition-colors">Personal Projects</a>
-                <a href="Resume_PurviVerma_.pdf" target="_blank" class="cta-button text-xs font-semibold px-3 py-1 rounded-sm tracking-widest">FULL CV</a>
-            </nav>
-        </div>
-    </header>
+<div id="scroll-progress" aria-hidden="true"></div>
+<div class="reg-mark reg-tl" aria-hidden="true"></div>
+<div class="reg-mark reg-tr" aria-hidden="true"></div>
+<div class="reg-mark reg-bl" aria-hidden="true"></div>
+<div class="reg-mark reg-br" aria-hidden="true"></div>
 
-    <!-- 1. HERO (The Initial View) -->
-    <section id="hero" class="hero-module section-padding pt-15 pb-24 text-center">
-        <div class="container mx-auto px-4">
-            <!-- Profile Picture Placeholder -->
-            <div class="flex justify-center mb-8">
-                <!-- IMPORTANT: Replace the 'src' attribute below with the URL of your profile picture -->
-                <img
-                    src="image.png"
-                    alt="Purvi Verma Profile Picture"
-                    class="w-36 h-36 rounded-full object-cover border-4 border-teal-accent shadow-xl shadow-teal-700/30 transition-all hover:scale-105"
-                    onerror="this.onerror=null; this.src='https://drive.google.com/file/d/1VU-QUccaVPQjJvyytfMrL3AscdRHU6eZ/view?usp=sharing';"
-                >
-            </div>
+<nav id="nav">
+  <a href="#hero" class="nav-name">Purvi Verma</a>
+  <button id="nav-toggle" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="nav-links">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="nav-links" id="nav-links">
+    <a href="#about">About</a>
+    <a href="#skills">Stack</a>
+    <a href="#timeline">Professional Experience</a>
+    <a href="#projects">Projects</a>
+    <a href="#achievements">Achievements</a>
+    <a href="#certifications">Certificates</a>
+    <a href="#creative">Creative</a>
+  </div>
+  <a href="https://purvi1508.github.io/PurviVerma/Resume_PurviVerma_.pdf" class="nav-resume" target="_blank" rel="noopener" aria-label="Download Purvi Verma's résumé (PDF)">Résumé ↓</a>
+</nav>
 
-            <!-- Suggested Opening Line -->
-            <p class="text-teal-accent text-lg font-medium mb-6 tracking-wide max-w-4xl mx-auto">
-                My journey as a civil engineering graduate who ventured into artificial intelligence, data science, and computational modeling has shaped me into a researcher eager to bridge disciplines and tackle complex real-world problems.
-            </p>
-            
-            <h1 class="text-6xl md:text-6xl font-black crimson leading-tight">
-                Computational Insights for <span class="accent-violet">Real-World Impact</span>
-            </h1>
-            
-            <!-- Suggested Intro Paragraph (Modified for conciseness and visual boldness) -->
-            <p class="text-xl mt-6 text-text-dim max-w-4xl mx-auto">
-                As a Civil Engineering graduate from IIT Bhubaneswar, my research foundation is defined by its span across <span class="font-extrabold text-teal-accent">Computational Mechanics</span>, <span class="font-extrabold text-teal-accent">Artificial Intelligence</span>, and <span class="font-extrabold text-teal-accent">Data-Driven Modeling</span>. My journey is characterized by interdisciplinary rigor: from developing <span class="font-extrabold text-teal-accent">thermodynamically consistent neural network models</span> for complex materials, to building ML systems for social good, and designing scalable <span class="font-extrabold text-teal-accent">AI safety guardrails</span> in industry. This unique blend of experience in simulation, machine learning, and LLMs drives my pursuit of a PhD, where I aim to integrate diverse methodologies to contribute research that is both scientifically rigorous and societally meaningful.
-            </p>
-            
-            <div class="mt-12 flex justify-center space-x-6">
-                <a href="#skill-galaxy" class="bg-teal-600 hover:bg-teal-700 text-white font-bold py-3 px-8 rounded-full transition-colors shadow-lg shadow-teal-700/50">
-                    Explore Research Assets <i class="fas fa-arrow-down ml-2"></i>
-                </a>
-            </div>
-        </div>
-    </section>
+<div id="hero-pin">
+<section id="hero">
+  <canvas id="bg-canvas" aria-hidden="true"></canvas>
+  <div class="state-label" id="stateLabel" aria-hidden="true">civil engineering <span class="a">◆</span></div>
+  
+  <!-- REAL-TIME DIAGNOSTIC HUD READOUT -->
+  <div class="hud-panel" aria-hidden="true">
+    <div class="hud-title">Manifold State</div>
+    <div class="hud-row"><span>Structural Phase:</span><span class="hud-val" id="hudPhase">Truss</span></div>
+    <div class="hud-row"><span>Degrees of Freedom:</span><span class="hud-val" id="hudDof">600 DoF</span></div>
+    <div class="hud-row"><span>System Strain:</span><span class="hud-val" id="hudStrain">0.024%</span></div>
+    <div class="hud-row"><span>Convergence Loss:</span><span class="hud-val" id="hudLoss">N/A</span></div>
+    <div class="hud-row"><span>Synaptic Connection:</span><span class="hud-val" id="hudSyn">Inactive</span></div>
+  </div>
 
-    <!-- 2. SKILL GALAXY (Interactive Solar System) -->
-    <section id="skill-galaxy" class="section-padding hidden-scroll">
-        <div class="container mx-auto px-4">
-            <h2 class="text-4xl font-extrabold text-center mb-4 crimson">
-                <i class="fas fa-satellite-dish text-teal-accent mr-3"></i> The Skill Galaxy
-            </h2>
-            <p class="text-center text-lg text-text-dim mb-12 max-w-3xl mx-auto">
-                The <span class="font-semibold text-text-strong">The Knowledge Star</span> (Sun) is orbited by the eight disciplines (Planets) that drive my skillset. Click any planet to see its detailed dossier.
-            </p>
-
-            <div id="galaxy-container">
-                <canvas id="galaxy-canvas"></canvas>
-                <div class="sun">
-                    <span>The Knowledge Star <br></span>
-                </div>
-
-                <!-- Skill Detail Panel (Replaces the large, centered modal for better layout) -->
-               <div id="skill-detail-panel" class="rounded-lg p-5">
-                    <h3 id="panel-dossier" class="text-2xl font-bold mb-2 text-violet-500 crimson">Select a Planet</h3>
-                    <p id="panel-explanation" class="text-base text-text-dim border-b border-text-dim/30 pb-3 mb-3">Click on any orbiting skill to view its specialized knowledge, toolset, and contribution to Scientific Machine Learning.</p>
-                    
-                    <p class="text-sm font-semibold text-teal-accent uppercase mt-4">Skillset:</p>
-                    <ul id="panel-skillset" class="text-sm text-text-light list-disc list-inside space-y-1 mt-2">
-                        <!-- Content populated by JavaScript -->
-                    </ul>
-                    <button id="skill-panel-close" class="mt-6 text-xs font-semibold text-teal-accent hover:text-white transition-colors">
-                        Close Panel <i class="fas fa-times ml-1"></i>
-                    </button>
-                </div>
-            </div>
-        </div>
-    </section>
-<!-- 3. PUBLICATIONS & PROJECTS AS A TIMELINE OF DISCOVERIES (BALANCED GRID) -->
-<section id="timeline" class="section-padding hidden-scroll">
-    <div class="container mx-auto px-4">
-        <h2 class="text-4xl font-extrabold text-center mb-16 crimson">
-            <i class="fas fa-telescope text-teal-accent mr-3"></i> Professional Timeline 
-        </h2>
-
-        <div class="relative timeline-container grid md:grid-cols-[1fr_2px_1fr] gap-y-10">
-            <div class="timeline-line hidden md:block"></div>
-            <!-- Discovery 2: LLM Safety Agent (RIGHT) -->
-            <div class="flex md:contents">
-                <div class="timeline-marker shadow-[0_0_15px_#64FFDA]"></div>
-                <div class="module-card group p-6 rounded-lg my-4 w-full relative hover:shadow-lg transition">
-                    <span class="text-xs font-semibold text-teal-accent uppercase tracking-wider">
-                        July 2024 - July 2026
-                    </span>
-                    <h3 class="text-xl font-bold my-2 crimson">
-                        Senior Associate Data Science
-                    </h3>
-                    <div class="timeline-details opacity-0 max-h-0 overflow-hidden group-hover:opacity-100 group-hover:max-h-[700px] transition-all duration-300">
-                            <p class="text-sm text-text-dim mt-2">
-                                ◦ <strong>AI Safety Guardrails:</strong> Architected and deployed end-to-end ML pipelines for AI safety, integrating computer vision and LLMs; achieved production-grade reliability with measurable reduction in harmful output rates.<br><br>
-                                ◦ <strong>Conversational AI Agent:</strong> Designed multi-turn LLM agent with tool calling, modular guardrails, and context-aware workflows; increased task success rate and enabled A/B testing of model variants in production.<br><br>
-                                ◦ <strong>Multimodal Content Processing:</strong> Built CV + LLM pipeline to extract structured insights from images, videos, and animations; evaluated across 500+ assets for 12 pharmaceutical brands with 90.3% accuracy and 87% semantic consistency.<br><br>
-                                ◦ <strong>LLMOps & Monitoring:</strong> Championed best practices in model monitoring, versioning, and retraining triggers; presented AI platform strategy to senior stakeholders.<br><br>
-                                ◦ <strong>Model Optimization:</strong> Explored parameter-efficient techniques (LoRA/PEFT) and vLLM for high-throughput LLM inferencing at scale.
-                            </p>
-                    </div>
-                    <span class="text-xs text-gray-400 mt-2 block timeline-toggle-hint">Tap / hover to see more <i class="fas fa-chevron-down"></i></span>
-                </div>
-            </div>
-
-            <!-- Discovery 3: Thesis Foundation (LEFT) -->
-            <div class="flex flex-row-reverse md:contents">
-                <div class="module-card group p-6 rounded-lg my-4 w-full relative hover:shadow-lg transition">
-                    <div class="flex space-x-2 mb-2 justify-end md:justify-start">
-                        <a href="https://drive.google.com/file/d/1F0I7nB5JZsyjNiB5vyyfvhMX9jcjcgOf/view" target="_blank" class="flex items-center px-3 py-1 bg-teal-600 text-white text-xs rounded hover:bg-teal-500 transition">
-                            <i class="fas fa-book mr-1"></i> Doc
-                        </a>
-                    </div>
-                    <span class="text-xs font-semibold text-teal-accent uppercase tracking-wider">
-                        May 2023 - May 2024
-                    </span>
-                    <h3 class="text-xl font-bold my-2 crimson">
-                        Research Intern
-                    </h3>
-                    <div class="timeline-details opacity-0 max-h-0 overflow-hidden group-hover:opacity-100 group-hover:max-h-[700px] transition-all duration-300">
-                        <p class="text-sm text-text-dim mt-2">
-                            <strong>Topic:</strong> Detecting Sexist Texts Targeted at Women in India<br>
-                            <strong>Affiliation:</strong> SMMME, IIT Bhubaneswar<br>
-                            <strong>Department:</strong> Institute of Computer Science, University of Tartu<br>
-                            <strong>Advisors:</strong> Prof. Kisor Kumar Sahu and Prof. Rajesh Sharma<br>
-                            ◦ Collected and preprocessed social media data using <span class="font-semibold text-text-strong">snscrape</span> & <span class="font-semibold text-text-strong">PRAW</span>.<br>
-                            ◦ Engineered features: TF-IDF, n-grams, sentiment scores, BERT/RoBERTa embeddings.<br>
-                            ◦ Built ML & DL models: Naive Bayes, KNN, ANN, RNN, LSTM, CNN.<br>
-                            ◦ Evaluated models using precision, recall, F1-score, ROC-AUC; performed cross-validation & hyperparameter tuning.
-                        </p>
-                    </div>
-                    <span class="text-xs text-gray-400 mt-2 block timeline-toggle-hint">Tap / hover to see more <i class="fas fa-chevron-down"></i></span>
-                </div>
-                <div class="timeline-marker shadow-[0_0_15px_#C77AD6]"></div>
-            </div>
-
-            <!-- AI Intern (March 2023 - May 2023, RIGHT) -->
-            <div class="flex md:contents">
-                <div class="timeline-marker shadow-[0_0_15px_#64FFDA]"></div>
-                <div class="module-card group p-6 rounded-lg my-4 w-full relative hover:shadow-lg transition">
-                    <div class="flex space-x-2 mb-2">
-                        <a href="https://github.com/purvi1508/-GANimate-Deep-Learning-based-Future-Image-Prediction-from-a-Single-Input-Image" target="_blank" class="flex items-center px-3 py-1 bg-gray-800 text-white text-xs rounded hover:bg-gray-700 transition">
-                            <i class="fab fa-github mr-1"></i> GitHub
-                        </a>
-                        <a href="https://drive.google.com/file/d/1Pm2V0KT-aBYrl4HXsJi3MgSDNQKjlLWJ/view" target="_blank" class="flex items-center px-3 py-1 bg-teal-600 text-white text-xs rounded hover:bg-teal-500 transition">
-                            <i class="fas fa-book mr-1"></i> Doc
-                        </a>
-                    </div>
-                    <span class="text-xs font-semibold text-teal-accent uppercase tracking-wider">
-                        March 2023 - May 2023
-                    </span>
-                    <h3 class="text-xl font-bold my-2 crimson">
-                        Artificial Intelligence Intern
-                    </h3>
-                    <div class="timeline-details opacity-0 max-h-0 overflow-hidden group-hover:opacity-100 group-hover:max-h-[400px] transition-all duration-300">
-                        <p class="text-sm text-text-dim mt-2">
-                            ◦ Collected and cleaned a large video dataset from YouTube.<br>
-                            ◦ Designed a GAN to generate video frames from single images, optimized generator/discriminator for realism.
-                        </p>
-                    </div>
-                    <span class="text-xs text-gray-400 mt-2 block timeline-toggle-hint">Tap / hover to see more <i class="fas fa-chevron-down"></i></span>
-                </div>
-            </div>
-
-        </div>
+  <div class="hero-inner">
+    <div class="eyebrow">AI &amp; Data Science Researcher</div>
+    <h1 class="name">Purvi <em>Verma</em></h1>
+    <p class="tagline">A civil engineer who moved into artificial intelligence, data science, and computational modeling — working across simulation, machine learning, and LLMs, with an eye toward research that's both rigorous and useful.</p>
+    <div class="hero-cta">
+      <a href="https://purvi1508.github.io/PurviVerma/Resume_PurviVerma_.pdf" class="btn btn-primary" target="_blank" rel="noopener" aria-label="Download résumé PDF">Download Résumé</a>
+      <a href="#creative" class="btn btn-ghost">See the Creative Side</a>
     </div>
+  </div>
+  <div class="scroll-cue" aria-hidden="true"><span>SCROLL</span><span class="line"></span></div>
 </section>
-
-
-<section id="certifications" class="section-padding hidden-scroll">
-    <div class="container mx-auto px-4">
-        <h2 class="text-4xl font-extrabold text-center mb-16 crimson">
-            <i class="fas fa-certificate text-teal-accent mr-3"></i>Certifications & Courses
-        </h2>
-        <div class="grid grid-cols-2 md:grid-cols-3 gap-8">
-
-            <!-- Certification 1 -->
-            <div class="cert-card relative module-card p-6 rounded-lg text-center group">
-                <img src="certificate1.jpg" alt="Certificate 1" class="mx-auto mb-4 rounded shadow-lg w-40 h-32 object-cover">
-                <h3 class="text-lg font-bold">Build Basic Generative Adversarial Networks (GANs)</h3>
-                <p class="text-xs text-text-dim mb-2">DeepLearning.AI</p>
-                <p class="text-sm text-text-dim">
-                    Learned the fundamentals of Generative Adversarial Networks, including training basic GANs, understanding their architecture, and practical applications in generating synthetic data.
-                </p>
-            </div>
-
-            <!-- Certification 2 -->
-            <div class="cert-card relative module-card p-6 rounded-lg text-center group">
-                <img src="certificate2.jpg" alt="Certificate 2" class="mx-auto mb-4 rounded shadow-lg w-40 h-32 object-cover">
-                <h3 class="text-lg font-bold">Applied Text Mining in Python</h3>
-                <p class="text-xs text-text-dim mb-2">University of Michigan</p>
-                <p class="text-sm text-text-dim">
-                    Focused on text mining techniques using Python, including text preprocessing, feature extraction, and sentiment analysis, with hands-on projects using real-world datasets.
-                </p>
-            </div>
-
-            <!-- Certification 3 -->
-            <div class="cert-card relative module-card p-6 rounded-lg text-center group">
-                <img src="certificate3.jpg" alt="Certificate 3" class="mx-auto mb-4 rounded shadow-lg w-40 h-32 object-cover">
-                <h3 class="text-lg font-bold">Introduction to Object-Oriented Programming in C++</h3>
-                <p class="text-xs text-text-dim mb-2">University of London</p>
-                <p class="text-sm text-text-dim">
-                    Covered core concepts of object-oriented programming, including classes, objects, inheritance, polymorphism, and encapsulation in C++, with practical coding exercises.
-                </p>
-            </div>
-
-            <!-- Certification 4 -->
-            <div class="cert-card relative module-card p-6 rounded-lg text-center group">
-                <img src="certificate4.jpg" alt="Certificate 4" class="mx-auto mb-4 rounded shadow-lg w-40 h-32 object-cover">
-                <h3 class="text-lg font-bold">Introduction to Web Development with HTML, CSS, JavaScript</h3>
-                <p class="text-xs text-text-dim mb-2">IBM</p>
-                <p class="text-sm text-text-dim">
-                    Gained foundational skills in web development, building responsive websites using HTML, CSS, and JavaScript, and understanding client-side web programming fundamentals.
-                </p>
-            </div>
-
-            <!-- Certification 5 -->
-            <div class="cert-card relative module-card p-6 rounded-lg text-center group">
-                <img src="certificate5.jpg" alt="Certificate 5" class="mx-auto mb-4 rounded shadow-lg w-40 h-32 object-cover">
-                <h3 class="text-lg font-bold">Supervised Machine Learning: Regression and Classification</h3>
-                <p class="text-xs text-text-dim mb-2">DeepLearning.AI / Stanford Online</p>
-                <p class="text-sm text-text-dim">
-                    Explored supervised machine learning techniques, including regression and classification models, evaluation metrics, and practical implementation using Python and real-world datasets.
-                </p>
-            </div>
-
-            <!-- Certification 6 -->
-            <div class="cert-card relative module-card p-6 rounded-lg text-center group">
-                <img src="certificate6.jpg" alt="Certificate 6" class="mx-auto mb-4 rounded shadow-lg w-40 h-32 object-cover">
-                <h3 class="text-lg font-bold">Crash Course on Python</h3>
-                <p class="text-xs text-text-dim mb-2">Google</p>
-                <p class="text-sm text-text-dim">
-                    Introduced to Python programming basics, including variables, data types, control structures, functions, and hands-on coding exercises for quick practical understanding.
-                </p>
-            </div>
-
-        </div>
-    </div>
-</section>
-<!-- Projects DNA Helix Section -->
-<!-- Projects DNA Helix Section -->
-<section id="projects" class="relative bg-dark text-white py-24 overflow-hidden">
-  <div class="container mx-auto px-6">
-
-    <h2 class="text-4xl font-extrabold text-center mb-16 crimson">
-      <i class="fas fa-rocket text-teal-accent mr-3"></i> Personal Projects
-    </h2>
-
-    <div id="helix" class="relative h-[1200px]">
-      <!-- Project nodes will be generated with JS -->
-    </div>
-
-<div id="project-panel" 
-     class="fixed right-6 top-1/2 transform -translate-y-1/2 
-            w-80 p-6 rounded-lg bg-gray-900/95 border border-cyan-400/30 hidden z-50 text-center">
-
-  <!-- Close Button -->
-  <button id="close-panel" 
-          class="absolute top-2 right-2 text-gray-400 hover:text-cyan-300 text-xl">✖</button>
-
-  <h3 id="project-title" class="text-lg font-bold text-cyan-300 mb-2"></h3>
-  <div id="project-desc" class="text-sm text-text-dim mb-4 text-justify"></div>
-
-  <a id="project-link" href="#" target="_blank" 
-     class="inline-block text-teal-accent hover:text-cyan-300 text-xl">
-    <i class="fab fa-github"></i>
-  </a>
-
 </div>
 
-
+<section id="about">
+  <div class="sheet-label">DWG <b>01</b> / 07 — ORIGIN</div>
+  <div class="section-tag"><svg viewBox="0 0 24 24"><path d="M12 2 L20 20 H4 Z"/><path d="M12 2 V20"/><circle cx="12" cy="9" r="1.4" fill="var(--coral)" stroke="none"/></svg>Origin story</div>
+  <h2 class="head" data-reveal>From load-bearing to learning
+    <svg viewBox="0 0 400 14" preserveAspectRatio="none" aria-hidden="true"><path d="M2,10 Q100,2 200,8 T398,6"/></svg>
+  </h2>
+  <div class="about-grid">
+    <div>
+      <p>I started in civil engineering, learning how structures carry load and stay standing under pressure a discipline that taught me patience, precision, and respect for rigor long before I ever touched a neural network. That foundation shaped how I approach every problem since: understand the system deeply before you try to change it.</p>
+      <p>Since then, I've moved through thermodynamically consistent neural network models for complex materials, NLP research on detecting online abuse, and, most recently, building production AI safety systems in industry each one demanding the same discipline: careful experimentation, honest evaluation, and the patience to iterate until something actually works, not just looks like it does. Alongside this, I've consistently balanced deep research work with production deadlines, learning early how to manage competing priorities without letting either suffer.</p>
+      <p>What drives me is the throughline across all of it — simulation, machine learning, and LLMs, applied to problems that are both scientifically rigorous and genuinely useful in the real world. I'm not chasing novelty for its own sake; I care about research that holds up under scrutiny and work that holds up under real-world pressure. That's the same standard I bring to every deadline, every collaboration, and every problem I take on.</p>
+    </div>
   </div>
 </section>
 
+<section id="skills">
+  <div class="sheet-label">DWG <b>02</b> / 07 — TOOLKIT</div>
+  <div class="section-tag"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M6 6l2 2M16 16l2 2M6 18l2-2M16 8l2-2"/></svg>What I build with</div>
+  <h2 class="head" data-reveal>What I build with
+    <svg viewBox="0 0 400 14" preserveAspectRatio="none" aria-hidden="true"><path d="M2,10 Q100,2 200,8 T398,6"/></svg>
+  </h2>
+  <div class="stack-groups">
+    <div class="stack-group">
+      <div class="cat">Languages</div>
+      <div class="skills-wrap">
+        <span class="pill">Python</span><span class="pill">C++</span><span class="pill">Julia</span><span class="pill">Mysql</span><span class="pill">HTML/CSS/JS</span>
+      </div>
+    </div>
+    <div class="stack-group">
+      <div class="cat">AI / ML</div>
+      <div class="skills-wrap">
+        <span class="pill">NLP</span>
+        <span class="pill">LLMs &amp; Agents</span><span class="pill">Computer Vision</span><span class="pill">NLP</span>
+        <span class="pill">GANs</span><span class="pill">BERT / RoBERTa</span><span class="pill">LoRA / PEFT</span>
+        <span class="pill">vLLM</span><span class="pill">CNN / RNN / LSTM</span><span class="pill">Prompt Engineering</span>
+      </div>
+    </div>
+    <div class="stack-group">
+      <div class="cat">Data &amp; ML Platforms</div>
+      <div class="skills-wrap">
+        <span class="pill">Vertex AI (Gemini)</span><span class="pill">Azure AI</span><span class="pill">MLflow – experiment tracking, model registry</span>
+        <span class="pill">A/B testing</span>
+      </div>
+    </div>
+    <div class="stack-group">
+      <div class="cat">LLM Stack</div>
+      <div class="skills-wrap">
+        <span class="pill">LangChain</span><span class="pill">LangGraph</span>
+        <span class="pill">RAG</span><span class="pill">MCP</span>
+        <span class="pill">Vector Databases (FAISS/Pinecone/Chroma)</span>
+      </div>
+    </div>
+      <div class="stack-group">
+      <div class="cat">MLOps / LLMOps</div>
+      <div class="skills-wrap">
+        <span class="pill">Docker</span><span class="pill">Kubernetes</span>
+        <span class="pill">CI/CD pipelines</span><span class="pill">model monitoring</span>
+        <span class="pill">retraining workflows</span>
+        <span class="pill">model evaluation &
+benchmarking</span>
+      </div>
+    </div>
+  </div>
+</section>
 
+<section id="timeline">
+  <div class="sheet-label">DWG <b>03</b> / 07 — JOURNEY</div>
+  <div class="section-tag"><svg viewBox="0 0 24 24"><circle cx="4" cy="19" r="1.8"/><circle cx="12" cy="8" r="1.8"/><circle cx="20" cy="14" r="1.8"/><path d="M5.6 17.7 10.6 9.6M13.5 9.2 18.4 12.9"/></svg>Where the path bent</div>
+  <h2 class="head" data-reveal>Where the path bent
+    <svg viewBox="0 0 400 14" preserveAspectRatio="none" aria-hidden="true"><path d="M2,10 Q100,2 200,8 T398,6"/></svg>
+  </h2>
+  <div class="timeline">
+    <div class="t-item is-ai" data-stagger style="transition-delay:70ms">
+      <div class="t-dot"></div>
+      <div class="t-year">Mar 2023 – May 2023</div>
+      <div class="t-role">Artificial Intelligence Intern</div>
+      <div class="t-org"></div>
+      <div class="t-desc">
+        <p>Identified that single-image future-frame prediction lacked reliable temporal modeling, causing generated sequences to lose
+coherence over successive frames; researched and implemented a hybrid GAN + LSTM architecture to jointly learn spatial
+features and temporal dependencies.</p>
+<p>Trained the generator-discriminator setup on image sequence data to forecast multiple future frames from a single input
+image, iterating on network architecture and hyperparameters to improve prediction quality; improved temporal
+consistency in generated sequences compared to a baseline GAN without sequence modeling.</p></div>
+    </div>
+    <div class="t-item is-ai" data-stagger style="transition-delay:140ms">
+      <div class="t-dot"></div>
+      <div class="t-year">May 2023 – May 2024</div>
+      <div class="t-role">Research Intern — Detecting Sexist Text Targeted at Women in India</div>
+      <div class="t-org">SMMME, IIT Bhubaneswar, with the Institute of Computer Science, University of Tartu · Advisors: Prof. Kisor Kumar Sahu &amp; Prof. Rajesh Sharma</div>
+      <div class="t-desc">Collected and preprocessed social media data (snscrape, PRAW), engineered features (TF-IDF, n-grams, sentiment, BERT/RoBERTa embeddings), and built and evaluated a range of ML/DL classifiers — Naive Bayes, KNN, ANN, RNN, LSTM, CNN — with cross-validation and hyperparameter tuning.</div>
+    </div>
+    <div class="t-item is-ai" data-stagger style="transition-delay:210ms">
+      <div class="t-dot"></div>
+      <div class="t-year">Jul 2024 – Jul 2026</div>
+      <div class="t-role">Senior Associate, Data Science</div>
+      <div class="t-org"></div>
+      <div class="t-desc">
+        <p>Identified critical AI safety gaps risking non-compliant outputs in enterprise LLM deployments; architected AI safety
+guardrails for Bodhi Compliance (Bodhi platform), cutting harmful output rates from 45% to under 5%.</p>
+        <p>Recognized limitations in single-turn LLM interactions for complex enterprise workflows; designed a multi-turn LLM agent
+with tool calling and context-aware orchestration, raising task success rate from 70% to 92% and enabling systematic A/B
+testing across model variants</p>
+        <p>Addressed the lack of automated, accurate document processing for enterprise digital assets; engineered Bodhi Vision, an
+end-to-end multimodal (CV + LLM) pipeline with intelligent image format conversion (PNG/JPEG/WebP to PSD),
+vLLM-powered segmentation, and advanced text detection replacing a fully manual process with one achieving 90.3%
+extraction accuracy, 87% semantic consistency, and zero failures across 500+ enterprise assets.</p>
+        <p>Tasked with scaling multimodal AI for regulated pharmaceutical marketing content; deployed a production CV + LLM
+pipeline for Eli Lilly, moving asset processing from manual review to automated handling of 10,000+ pharmaceutical assets
+with high accuracy in a compliance-sensitive environment.</p>
+      </div>
+    </div>
+  </div>
+</section>
 
+<section id="projects">
+  <div class="sheet-label">DWG <b>04</b> / 07 — PROJECTS</div>
+  <div class="section-tag"><svg viewBox="0 0 24 24"><path d="M5 3h10l4 4v14H5z"/><path d="M15 3v4h4"/><path d="M8 12h8M8 16h5"/></svg>Selected work</div>
+  <h2 class="head" data-reveal>Projects
+    <svg viewBox="0 0 400 14" preserveAspectRatio="none" aria-hidden="true"><path d="M2,10 Q100,2 200,8 T398,6"/></svg>
+  </h2>
+  <div class="projects-grid">
+    <div class="proj-card proj-featured" data-stagger style="transition-delay:0ms">
+      <div class="glow"></div>
+      <div class="proj-top">
+        <div class="proj-title">AI-Powered Agricultural Assistant</div>
+        <div class="proj-links"><a href="https://github.com/purvi1508/AgriAssist" target="_blank" rel="noopener">Codebase</a></div>
+      </div>
+      <div class="proj-desc">Developed a multimodal AI assistant bridging the information gap across the agriculture lifecycle for Indian farmers, built on LangGraph, Gemini (Vertex AI), GCP, and Firestore with voice, image, and text input. Deployed an LLM-powered agentic architecture with task-specific agents for real-time geolocation, speech translation, plant disease detection, and market intelligence, plus a vector-search scheme recommendation engine matching farmers to relevant subsidies. Designed for scale with Kubernetes and Firebase, with future integration into national agriculture APIs.</div>
+      <div class="proj-tags">
+        <span class="tag">LangGraph</span><span class="tag">Vertex AI</span><span class="tag">GCP</span><span class="tag">Multi-Agent Systems</span>
+      </div>
+    </div>
+    <div class="proj-card" data-stagger style="transition-delay:600ms">
+      <div class="glow"></div>
+      <div class="proj-top">
+        <div class="proj-title">CodeMap — AI-Powered Code Architecture Analyzer</div>
+        <div class="proj-links"><a href="https://github.com/purvi1508/CodeMap" target="_blank" rel="noopener">Codebase</a></div>
+      </div>
+      <div class="proj-desc">Built a 7-step LLM-powered pipeline that ingests any GitHub repository and automatically generates architecture diagrams, function summaries, and actionable insights. Extracts classes, functions, and module dependencies, then produces plain-English function summaries, design/anti-pattern detection, and layered architecture analysis. Generates self-healing Mermaid diagrams with automatic icon enrichment, auto-fixing broken syntax via LLM and rendering application, data-flow, and deployment diagrams to PNG.</div>
+      <div class="proj-tags">
+        <span class="tag">LLM Pipelines</span><span class="tag">Static Analysis</span><span class="tag">Mermaid</span><span class="tag">Python</span>
+      </div>
+    </div>
+    <div class="proj-card" data-stagger style="transition-delay:100ms">
+      <div class="glow"></div>
+      <div class="proj-top">
+        <div class="proj-title">Safeguard Toolkit — Open-Source Security Scanner</div>
+        <div class="proj-links"><a href="https://github.com/purvi1508/Safeguard" target="_blank" rel="noopener">Codebase</a></div>
+      </div>
+      <div class="proj-desc">Designed and built an open-source Python security analysis toolkit demonstrating modular design, filesystem operations, and static code analysis. Built custom scanners including a PermissionsChecker for auditing directory and file permissions and an EvalExecScanner for detecting insecure use of <code>eval()</code>/<code>exec()</code>. Packaged and distributed via PyPI (<code>pip install safeguard-toolkit</code>) with documentation supporting future extensibility and CI/CD integration for pre-deployment risk checks.</div>
+      <div class="proj-tags">
+        <span class="tag">Python</span><span class="tag">Static Analysis</span><span class="tag">PyPI</span><span class="tag">Secure Coding</span>
+      </div>
+    </div>
 
-    <!-- 6. IMPACT & TEACHING HIGHLIGHTS -->
-    <section id="impact-hall" class="section-padding hidden-scroll">
-        <div class="container mx-auto px-4">
-            <h2 class="text-4xl font-extrabold text-center mb-16 crimson">
-                <i class="fas fa-trophy text-teal-accent mr-3"></i> Hall of Impact
-            </h2>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <!-- Impact Card 1: Hackathon Finalist -->
-                <div class="module-card p-6 rounded-lg text-center">
-                    <i class="fas fa-laptop-code text-5xl text-teal-accent mb-4"></i>
-                    <h3 class="text-xl font-bold crimson">Agentic AI Hackathon Finalist</h3>
-                    <p class="text-sm text-text-dim mt-2">Top finalist in the <span class="font-semibold text-text-strong">Google Cloud AgenticAI Day Hackathon</span>, demonstrating excellence in rapid LLM workflow and safety development.</p>
-                </div>
-                <!-- Impact Card 2: Academic Award -->
-                <div class="module-card p-6 rounded-lg text-center">
-                    <i class="fas fa-award text-5xl text-violet-500 mb-4"></i>
-                    <h3 class="text-xl font-bold crimson">General Championship 2024 Winner</h3>
-                    <p class="text-sm text-text-dim mt-2">Secured <span class="font-semibold text-text-strong">1st place</span> in the Machine Learning-based Real-time Age and Gender Detection competition at IIT Bhubaneswar (2024).</p>
-                </div>
-                <!-- Impact Card 3: Quantitative & Coding Awards -->
-                <div class="module-card p-6 rounded-lg text-center">
-                    <i class="fas fa-square-root-alt text-5xl text-teal-accent mb-4"></i>
-                    <h3 class="text-xl font-bold crimson">Quantitative & Coding Excellence</h3>
-                    <p class="text-sm text-text-dim mt-2">Achieved <span class="font-semibold text-text-strong">AIR 211</span> in the JLR Gearshift Code Rally and qualified in the <span class="font-semibold text-text-strong">Pre-Regional Mathematical Olympiad (PRMO), 2020</span>.</p>
-                </div>
-            </div>
-        </div>
-    </section>
+    <div class="proj-card" data-stagger style="transition-delay:200ms">
+      <div class="glow"></div>
+      <div class="proj-top">
+        <div class="proj-title">Physics-Informed Neural Networks for Nonlinear Cantilever Beam Analysis</div>
+        <div class="proj-links"><a href="https://drive.google.com/file/d/1Te4KKJRomf0d3niqzYLglT0MFMBjtjDr/view" target="_blank" rel="noopener" aria-label="Read the write-up for this project">Write-up</a></div>
+      </div>
+      <div class="proj-desc">Leveraged PyTorch to implement Physics-Informed Neural Networks (PINNs) for analyzing a nonlinear cantilever beam system, comparing results against finite element analysis to improve accuracy of predicted beam behavior. Conducted a comparative study of the Galerkin Method versus PINNs for solving the nonlinear exact equation of elastic beam deflection.</div>
+      <div class="proj-tags">
+        <span class="tag">PyTorch</span><span class="tag">PINNs</span><span class="tag">FEA</span>
+      </div>
+    </div>
 
-    <!-- FOOTER -->
-    <footer class="py-10 border-t border-line-dark text-center text-sm text-text-dim mt-10">
-        <p>E-mail: 20ce01050@iitbbs.ac.in | <a href="https://github.com/purvi1508" target="_blank" class="text-teal-accent hover:text-violet-500">GitHub: purvi1508</a></p>
-    </footer>
+    <div class="proj-card" data-stagger style="transition-delay:300ms">
+      <div class="glow"></div>
+      <div class="proj-top">
+        <div class="proj-title">Age and Gender Detection System</div>
+        <div class="proj-links"><a href="https://github.com/purvi1508/Age-and-gender-detection-system-" target="_blank" rel="noopener">Codebase</a></div>
+      </div>
+      <div class="proj-desc">Built a real-time age and gender detection system on the UTKFace dataset using 128×128 grayscale input. Combined Conv2D layers (64/128/256 filters with max-pooling) and dense/dropout regularization with a multi-head attention transformer block and a BiLSTM + global max-pooling stage to capture temporal dependencies, feeding dual output heads for gender and age prediction. Ran live detection via webcam using Haar cascade face detection with bounding-box overlays for real-time labels.</div>
+      <div class="proj-tags">
+        <span class="tag">CNN</span><span class="tag">Transformers</span><span class="tag">BiLSTM</span><span class="tag">OpenCV</span>
+      </div>
+    </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const container = document.getElementById('galaxy-container');
-            const detailPanel = document.getElementById('skill-detail-panel');
+    <div class="proj-card" data-stagger style="transition-delay:400ms">
+      <div class="glow"></div>
+      <div class="proj-top">
+        <div class="proj-title">Amazon Product Scraper</div>
+        <div class="proj-links"><a href="https://github.com/purvi1508/-Amazon_Product_Scraper" target="_blank" rel="noopener">Codebase</a></div>
+      </div>
+      <div class="proj-desc">Built a flexible scraper that crawls Amazon product pages from any user-provided base URL, automatically navigating through listings to extract product name, price, reviews, and ratings.</div>
+      <div class="proj-tags">
+        <span class="tag">Web Scraping</span><span class="tag">Python</span>
+      </div>
+    </div>
 
-            // --- Timeline: guarantee mobile stacking regardless of Tailwind CDN's
-            // CSS injection timing. The Tailwind CDN script generates and injects
-            // its utility CSS (including the "grid" class used by .timeline-container)
-            // asynchronously, so it can land after our hand-written <style> block and
-            // win ties in the cascade even though our media query is more specific in
-            // intent. Stripping the "grid" class directly in JS removes the conflict
-            // at the source instead of fighting it with !important everywhere.
-            function syncTimelineLayout() {
-                const tl = document.querySelector('.timeline-container');
-                if (!tl) return;
-                if (window.innerWidth < 768) {
-                    tl.classList.remove('grid');
-                    tl.style.display = 'block';
-                } else {
-                    tl.classList.add('grid');
-                    tl.style.display = '';
-                }
-            }
-            syncTimelineLayout();
-            window.addEventListener('resize', syncTimelineLayout);
+    <div class="proj-card" data-stagger style="transition-delay:500ms">
+      <div class="glow"></div>
+      <div class="proj-top">
+        <div class="proj-title">Multimodal Therapy Assistant</div>
+        <div class="proj-links"><a href="https://github.com/purvi1508/Multimodal-Therapy-Assistant" target="_blank" rel="noopener">Codebase</a></div>
+      </div>
+      <div class="proj-desc">Architected a scalable multi-agent system supporting emotional wellness through text, voice, and facial emotion input. A central Supervisor Agent orchestrates routing and safety while a Perception Agent processes tone, facial expression, and text; a Cognitive Insight Agent detects intent, cognitive distortions, toxicity, and risk; a Therapeutic Planner Agent generates CBT/DBT-based supportive responses; and a Long-Term Memory Agent tracks emotional evolution across sessions. Combined audio transcription, emotion detection, and tone-adaptive rewriting tools into a personalized response pipeline.</div>
+      <div class="proj-tags">
+        <span class="tag">Multi-Agent Systems</span><span class="tag">NLP</span><span class="tag">Emotion Detection</span>
+      </div>
+    </div>
 
-            // --- Timeline: tap-to-expand on touch/mobile (hover doesn't work on phones) ---
-            document.querySelectorAll('.timeline-toggle-hint').forEach(hint => {
-                hint.addEventListener('click', () => {
-                    const card = hint.closest('.module-card');
-                    const details = card.querySelector('.timeline-details');
-                    const isOpen = details.classList.toggle('details-open');
-                    hint.classList.toggle('open', isOpen);
-                });
-            });
+    <div class="proj-card" data-stagger style="transition-delay:700ms">
+      <div class="glow"></div>
+      <div class="proj-top">
+        <div class="proj-title">LogoDetect — Automated Dataset Generation &amp; YOLO Fine-Tuning</div>
+        <div class="proj-links"><a href="https://github.com/purvi1508/LogoDetect-YOLO-Finetune" target="_blank" rel="noopener">Codebase</a></div>
+      </div>
+      <div class="proj-desc">Built an end-to-end pipeline to generate brand-specific logo detection models from raw logos and background images. Automated dataset creation by detecting humans (YOLO) and text regions (Tesseract OCR) to avoid logo overlap, then applying randomized placement and transformations (blur, brightness, contrast, RGB shift, gamma) to synthesize training data with YOLO-format annotations. Handled train/val dataset splitting, YAML config generation, and fine-tuning of YOLO11n with GPU auto-detection and export to formats like ONNX and TorchScript.</div>
+      <div class="proj-tags">
+        <span class="tag">YOLO</span><span class="tag">Computer Vision</span><span class="tag">OCR</span><span class="tag">Data Augmentation</span>
+      </div>
+    </div>
+  </div>
+</section>
 
-            // --- Mobile nav toggle ---
-            const navToggle = document.getElementById('nav-toggle');
-            const mainNav = document.getElementById('main-nav');
-            if (navToggle) {
-                navToggle.addEventListener('click', () => {
-                    mainNav.classList.toggle('open');
-                });
-                mainNav.querySelectorAll('a').forEach(link => {
-                    link.addEventListener('click', () => mainNav.classList.remove('open'));
-                });
-            }
+<section id="achievements">
+  <div class="sheet-label">DWG <b>05</b> / 07 — MILESTONES</div>
+  <div class="section-tag"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>Academic &amp; Professional Milestones</div>
+  <h2 class="head" data-reveal>Key Milestones
+    <svg viewBox="0 0 400 14" preserveAspectRatio="none" aria-hidden="true"><path d="M2,10 Q100,2 200,8 T398,6"/></svg>
+  </h2>
+  <div class="ach-row">
+    <div class="ach-card" data-stagger style="transition-delay:0ms">
+      <div class="ach-num">Finalist</div>
+      <div class="ach-label">Agentic AI Hackathon</div>
+      <div class="ach-sub">Top finalist in the Google Cloud AgenticAI Day Hackathon, demonstrating excellence in rapid LLM workflow and safety development.</div>
+    </div>
+    <div class="ach-card" data-stagger style="transition-delay:200ms">
+      <div class="ach-num">IIT</div>
+      <div class="ach-label">B.Tech Alumnus</div>
+      <div class="ach-sub">Graduated from IIT Bhubaneswar, specializing in Civil Engineering mechanics.</div>
+    </div>
+    <div class="ach-card" data-stagger style="transition-delay:300ms">
+      <div class="ach-num">2+ Yrs</div>
+      <div class="ach-label">Data Science Career</div>
+      <div class="ach-sub">Hands-on application in industry leading AI safety efforts and model deployments.</div>
+    </div>
+  </div>
+</section>
 
-            // --- 1. Scroll Reveal Logic ---
-            const observerOptions = {
-                root: null,
-                threshold: 0.1
-            };
+<section id="certifications">
+  <div class="sheet-label">DWG <b>06</b> / 07 — CREDENTIALS</div>
+  <div class="section-tag"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Verified Expertise</div>
+  <h2 class="head" data-reveal>Certifications
+    <svg viewBox="0 0 400 14" preserveAspectRatio="none" aria-hidden="true"><path d="M2,10 Q100,2 200,8 T398,6"/></svg>
+  </h2>
 
-            function handleIntersect(entries, observer) {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('visible');
-                        observer.unobserve(entry.target);
-                    }
-                });
-            }
+  <div class="cert-grid">
+        <div class="cert-card" data-stagger style="transition-delay:100ms">
+      <img src="certificate2.jpg" alt="Certificate 2" class="cert-img" width="160" height="128" loading="lazy" decoding="async">
+      <div>
+        <div class="cert-name">Applied Text Mining in Python</div>
+        <div class="cert-meta">University of Michigan</div>
+      </div>
+    </div>
+    <div class="cert-card" data-stagger style="transition-delay:0ms">
+      <img src="certificate1.jpg" alt="Certificate 1" class="cert-img" width="160" height="128" loading="lazy" decoding="async">
+      <div class="cert-badge">GAN</div>
+      <div>
+        <div class="cert-name">Build Basic Generative Adversarial Networks (GANs)</div>
+        <div class="cert-meta">DeepLearning.AI</div>
+      </div>
+    </div>
+    <div class="cert-card" data-stagger style="transition-delay:200ms">
+      <img src="certificate3.jpg" alt="Certificate 3"class="cert-img" width="160" height="128" loading="lazy" decoding="async">
+      <div class="cert-badge">C++</div>
+      <div>
+        <div class="cert-name">Introduction to Object-Oriented Programming in C++</div>
+        <div class="cert-meta">University of London</div>
+      </div>
+    </div>
+    <div class="cert-card" data-stagger style="transition-delay:300ms">
+      <img src="certificate4.jpg" alt="Certificate 4" class="cert-img" width="160" height="128" loading="lazy" decoding="async">
+      <div class="cert-badge">WEB</div>
+      <div>
+        <div class="cert-name">Introduction to Web Development with HTML, CSS, JavaScript</div>
+        <div class="cert-meta">IBM</div>
+      </div>
+    </div>
+    <div class="cert-card" data-stagger style="transition-delay:400ms">
+      <img src="certificate5.jpg" alt="Certificate 5"class="cert-img" width="160" height="128" loading="lazy" decoding="async">
+      <div class="cert-badge">ML</div>
+      <div>
+        <div class="cert-name">Supervised Machine Learning: Regression and Classification</div>
+        <div class="cert-meta">DeepLearning.AI / Stanford Online</div>
+      </div>
+    </div>
+    <div class="cert-card" data-stagger style="transition-delay:500ms">
+      <img src="certificate6.jpg" alt="Certificate 6" class="cert-img" width="160" height="128" loading="lazy" decoding="async">
+      <div class="cert-badge">PY</div>
+      <div>
+        <div class="cert-name">Crash Course on Python</div>
+        <div class="cert-meta">Google</div>
+      </div>
+    </div>
+  </div>
+</section>
 
-            const observer = new IntersectionObserver(handleIntersect, observerOptions);
-            document.querySelectorAll('.hidden-scroll').forEach(section => {
-                observer.observe(section);
-            });
-            
-            // --- 2. Skill Galaxy (Solar System) Logic ---
-            const skillsData = [
-                // Planets (Core Disciplines)
-                // Speeds have been reduced significantly for slower, more deliberate movement.
-                {},
-                { id: 1, name: "Programming & Languages", color: "#64FFDA", radius: 100, speed: 0.0025, size: 24, 
-                  dossier: "Computational programming for data-driven and simulation-based research.", 
-                  explanation: "Strong foundation in general-purpose and scientific programming for cross-domain applications.",
-                  skillset: ["Python", "C/C++", "Julia"] },
-                { id: 2, name: "Machine Learning & AI", color: "#C77AD6", radius: 130, speed: 0.0015, size: 28, 
-                  dossier: "End-to-end machine learning and deep learning expertise.", 
-                  explanation: "Experienced in classical ML, deep learning, NLP, computer vision, and advanced visualization.",
-                  skillset: ["Pandas", "NumPy", "Scikit-learn", "TensorFlow", "Keras", "PyTorch", "SciPy",  "Matplotlib", "NLTK", "SpaCy", "OpenCV"] },
-                { id: 3, name: "LLM Ops & Frameworks", color: "#FFD700", radius: 160, speed: 0.004, size: 20, 
-                  dossier: "Building and managing large language model pipelines.", 
-                  explanation: "Skilled in orchestration, deployment, and safety of LLM-based systems.",
-                  skillset: ["LangChain", "LangGraph", "LangFlow"] },
-                { id: 4, name: "Engineering & Simulation Tools", color: "#64FFDA", radius: 190, speed: 0.002, size: 32, 
-                  dossier: "Tools for structural, material, and engineering simulations.", 
-                  explanation: "Proficient in civil engineering modeling and simulation for research and applied contexts.",
-                  skillset: ["Abaqus", "STAAD Pro", "AutoCAD"] },
-                { id: 5, name: "Databases", color: "#C77AD6", radius: 220, speed: 0.003, size: 20, 
-                  dossier: "Data management for large-scale applications.", 
-                  explanation: "Hands-on with relational and NoSQL databases for storing and querying structured/unstructured data.",
-                  skillset: ["MySQL", "MongoDB"] },
-                { id: 6, name: "DevOps & Cloud", color: "#FFD700", radius: 250, speed: 0.001, size: 26, 
-                  dossier: "Deployment and scaling of computational models.", 
-                  explanation: "Experienced in containerization and orchestration for scalable research and industry projects.",
-                  skillset: ["Docker", "Kubernetes"] },
-                { id: 7, name: "Julia Ecosystem", color: "#64FFDA", radius: 280, speed: 0.0035, size: 30, 
-                  dossier: "Scientific computing with Julia.", 
-                  explanation: "Specialized in Julia-based packages for automatic differentiation, finite element methods, and scientific ML.",
-                  skillset: ["Flux.jl", "Zygote.jl", "Enzyme.jl", "DiffEqFlux.jl", "Gridap.jl", "ADFEM.jl", "DataFrames.jl", "Plots.jl", "PyPlot.jl", "SciML.jl"] },
-                { id: 8, name: "Domain-Specific Expertise", color: "#C77AD6", radius: 310, speed: 0.0015, size: 36, 
-                  dossier: "Advanced research methods in engineering and applied sciences.", 
-                  explanation: "Experience in computational mechanics, plasticity, structural health monitoring, and renewable energy.",
-                  skillset: ["Finite Element Methods (FEM)", "Physics-Informed Neural Networks (PINNs)", "Plasticity & Constitutive Modeling", "Computational Mechanics", "Structural Health Monitoring"] },
-                
-                // The 'Pluto' item (id 9) has been removed as requested.
-            ];
+<section id="creative">
+  <div class="sheet-label">DWG <b>07</b> / 07 — EXPERIMENT</div>
+  <div class="section-tag"><svg viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>Drafting Corner</div>
+  <h2 class="head" data-reveal>Interactive Structural Pad
+    <svg viewBox="0 0 400 14" preserveAspectRatio="none" aria-hidden="true"><path d="M2,10 Q100,2 200,8 T398,6"/></svg>
+  </h2>
+  <p class="pad-intro">As a nod to structural engineering draftsmanship, grab the pen below to draw. Use the <strong>"Truss Grid Mode"</strong> to automatically snap nodes and form perfect structural trusses in real-time, simulating mechanics on the fly.</p>
 
-            const canvas = document.getElementById('galaxy-canvas');
-            const ctx = canvas.getContext('2d');
-            const sun = document.querySelector('.sun');
-            let center, width, height;
-            let time = 0; // The time variable controlling the animation
-            const timeStep = 0.2; // Reduced global time step for slower motion
-            let hoveredSkillId = null; // set on mouseenter/click; used to show a floating name label
-            let hoverLabelEl = null;
+  <div class="sketchpad">
+    <div class="pad-toolbar">
+      <div class="pad-colors">
+        <button class="swatch active" style="--sw: var(--coral);" data-color="#ff6b4a" aria-label="Coral ink"></button>
+        <button class="swatch" style="--sw: var(--blueprint);" data-color="#5fd4d0" aria-label="Blueprint ink"></button>
+        <button class="swatch" style="--sw: var(--gold);" data-color="#f2b84b" aria-label="Gold ink"></button>
+        <button class="swatch" style="--sw: #12141c;" data-color="#12141c" aria-label="Dark ink"></button>
+        <input type="color" class="swatch-custom" id="customColor" value="#5fd4d0" title="Custom color picker">
+      </div>
+      
+      <div class="pad-tools">
+        <button class="pad-btn active" id="btn-draw">Free-draw Pencil</button>
+        <button class="pad-btn" id="btn-truss">Truss Grid Mode</button>
+        <button class="pad-btn" id="btn-eraser">Eraser</button>
+        <div style="width: 1px; height: 20px; background: var(--ink);"></div>
+        <input type="file" id="img-upload" accept="image/*" style="display:none;">
+        <div class="pad-size-label" style="display:none;" id="anim-status">Animation: <span id="anim-state">OFF</span></div>
+        <div style="width: 1px; height: 20px; background: var(--ink);"></div>
+        <button class="pad-btn pad-btn-primary" id="btn-clear">Clear Sheet</button>
+        <button class="pad-btn pad-btn-primary" id="btn-download">Export DWG</button>
+      </div>
+    </div>
 
-            // Responsive scale factor so orbit radii fit smaller screens
-            function getScale() {
-                // Largest orbit radius in data is 310, sun ~70 half-width.
-                const maxRadius = 310;
-                const available = Math.min(width, height) / 2 - 20;
-                return Math.min(1, available / maxRadius);
-            }
+    <div class="pad-canvas-wrap" id="canvasContainer">
+      <div class="pad-cursor" id="customCursor" aria-hidden="true"></div>
+      <div class="pad-hint" id="padHint">Hold down &amp; drag inside this grid to draft...</div>
+      <canvas id="padCanvas"></canvas>
+    </div>
+  </div>
 
-            function resizeCanvas() {
-                width = container.clientWidth;
-                height = container.clientHeight;
-                canvas.width = width;
-                canvas.height = height;
-                center = { x: width / 2, y: height / 2 };
-                // Reposition the sun element after resize
-                sun.style.left = `${center.x - sun.clientWidth / 2}px`;
-                sun.style.top = `${center.y - sun.clientHeight / 2}px`;
-            }
+  <div class="creative-grid">
+    <div class="art-card art-1">
+      <div class="art-frame">
+        <div class="n">01</div>
+        <img src="Drawing1.jpg">
+      </div>
+      <div class="cap">A face pulled apart into planes and shadow, Peaky Blinders style — testing how fractured a portrait can get before it stops reading as calm, guarded resolve.</div>
+    </div>
+    <div class="art-card art-2">
+      <div class="art-frame">
+        <div class="n">02</div>
+        <img src="Drawing2.jpg">
+      </div>
+      <div class="cap">Skull bound in roses, stippled line by line — patient proof that beauty and decay have always been the same subject.</div>
+    </div>
+    <div class="art-card art-3">
+      <div class="art-frame">
+        <div class="n">03</div>
+        <img src="Drawing3.jpg">
+      </div>
+      <div class="cap">Radha and Krishna, built up in pencil shade by shade — devotion is slow work, and the drawing wanted to move at that pace too.</div>
+    </div>
+  </div>
+</section>
 
-            window.addEventListener('resize', resizeCanvas);
-            resizeCanvas();
+<footer>
+  <div class="f-name">© 2026 Purvi Verma</div>
+  <div>
+    <a href="https://purvi1508.github.io/PurviVerma/Resume_PurviVerma_.pdf" target="_blank" rel="noopener">Résumé (PDF)</a> · 
+    <a href="https://github.com/purvi1508/PurviVerma" target="_blank" rel="noopener">GitHub</a>
+  </div>
+</footer>
 
-            function draw() {
-                ctx.clearRect(0, 0, width, height);
-                time += timeStep; // Use the reduced time step
-                const scale = getScale();
+<script>
+  /* ---------- MOBILE NAVIGATION TOGGLE ---------- */
+  const navToggle = document.getElementById('nav-toggle');
+  const navLinks = document.getElementById('nav-links');
 
-                skillsData.forEach(skill => {
-                    const r = skill.radius * scale;
-                    // 1. Draw Orbit Line
-                    ctx.beginPath();
-                    ctx.arc(center.x, center.y, r, 0, 2 * Math.PI);
-                    ctx.strokeStyle = skill.color;
-                    ctx.globalAlpha = 0.2;
-                    ctx.stroke();
-
-                    // 2. Calculate Planet Position
-                    const angle = skill.speed * time;
-                    const x = center.x + r * Math.cos(angle);
-                    const y = center.y + r * Math.sin(angle);
-                    
-                    // 3. Update HTML Element Position (or draw a circle on canvas)
-                    let planetElement = document.getElementById(`planet-${skill.id}`);
-                    const planetSize = Math.max(6, skill.size * Math.max(scale, 0.6));
-                    if (!planetElement) {
-                        planetElement = document.createElement('div');
-                        planetElement.id = `planet-${skill.id}`;
-                        planetElement.className = 'planet absolute';
-                        planetElement.style.backgroundColor = skill.color;
-                        planetElement.dataset.skillId = skill.id;
-                        planetElement.title = skill.name;
-                        
-                        planetElement.addEventListener('click', () => showSkillDetails(skill.id));
-                        // Hover on desktop (and devices that fire mouse events) shows just the name label
-                        planetElement.addEventListener('mouseenter', () => { hoveredSkillId = skill.id; });
-                        planetElement.addEventListener('mouseleave', () => {
-                            if (hoveredSkillId === skill.id) hoveredSkillId = null;
-                        });
-                        container.appendChild(planetElement);
-                    }
-                    planetElement.style.width = `${planetSize}px`;
-                    planetElement.style.height = `${planetSize}px`;
-                    
-                    // Update position
-                    planetElement.style.left = `${x - planetSize / 2}px`;
-                    planetElement.style.top = `${y - planetSize / 2}px`;
-
-                    // Keep the hover label glued to its planet as it orbits
-                    if (hoveredSkillId === skill.id) {
-                        if (!hoverLabelEl || !hoverLabelEl.isConnected) {
-                            hoverLabelEl = document.createElement('div');
-                            hoverLabelEl.className = 'planet-label';
-                            container.appendChild(hoverLabelEl);
-                        }
-                        hoverLabelEl.textContent = skill.name;
-                        hoverLabelEl.style.left = `${x}px`;
-                        hoverLabelEl.style.top = `${y}px`;
-                        hoverLabelEl.style.display = 'block';
-                    }
-                });
-
-                if (hoveredSkillId === null && hoverLabelEl) {
-                    hoverLabelEl.style.display = 'none';
-                }
-
-                requestAnimationFrame(draw);
-            }
-
-            function showSkillDetails(skillId) {
-                const skill = skillsData.find(s => s.id === skillId);
-                if (!skill) return;
-
-                document.getElementById('panel-dossier').textContent = skill.name;
-                document.getElementById('panel-dossier').style.color = skill.color;
-                document.getElementById('panel-explanation').textContent = skill.explanation;
-                
-                const skillsetUl = document.getElementById('panel-skillset');
-                skillsetUl.innerHTML = ''; // Clear previous
-                
-                // Add the skillset items
-                skill.skillset.forEach(tool => {
-                    const li = document.createElement('li');
-                    li.textContent = tool;
-                    skillsetUl.appendChild(li);
-                });
-
-                // Highlight which planet is selected (mobile-friendly label since title= tooltips don't show on tap).
-                // Reuses the same hover-tracking mechanism so the label follows the planet as it orbits.
-                if (window.innerWidth < 768) {
-                    hoveredSkillId = skillId;
-                }
-
-                // Show the panel
-                detailPanel.classList.add('visible');
-                // *** Shift the galaxy to the left ***
-                if (window.innerWidth >= 1024) { // Only shift on desktop/tablet views
-                    container.classList.add('shifted');
-                } else if (window.innerWidth < 1024) {
-                    // On mobile/tablet, the panel sits below the galaxy — scroll it into view
-                    setTimeout(() => detailPanel.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 50);
-                }
-            }
-
-            window.hideSkillDetails = function() {
-                detailPanel.classList.remove('visible');
-                hoveredSkillId = null;
-                // *** Remove the shift from the galaxy ***
-                container.classList.remove('shifted');
-            }
-
-            // Add click listener to close button
-            const skillCloseBtn = document.getElementById('skill-panel-close');
-            if (skillCloseBtn) {
-                skillCloseBtn.addEventListener('click', hideSkillDetails);
-            }
-
-            // Scrolling away should clear the hover/tap label and close the open
-            // detail panel, on both mobile and desktop — same behavior as the
-            // Personal Projects panel.
-            window.addEventListener('scroll', () => {
-                hoveredSkillId = null;
-                if (detailPanel.classList.contains('visible')) {
-                    hideSkillDetails();
-                }
-            });
-            
-            // Initialize with a default view for the panel
-            const defaultSkill = skillsData.find(s => s.id === 8);
-            if (defaultSkill) {
-                document.getElementById('panel-dossier').textContent = defaultSkill.name;
-                document.getElementById('panel-dossier').style.color = defaultSkill.color;
-                document.getElementById('panel-explanation').textContent = defaultSkill.explanation;
-                
-                const skillsetUl = document.getElementById('panel-skillset');
-                skillsetUl.innerHTML = '';
-                defaultSkill.skillset.slice(0, 3).forEach(tool => { // Show first few for default view
-                    const li = document.createElement('li');
-                    li.textContent = tool;
-                    skillsetUl.appendChild(li);
-                });
-            }
-
-
-            // Start the visualization loop
-            draw();
-        });
-const projects = [
-  {
-    name: "AI-Powered Agricultural Assistant",
-    desc: [
-"Developed a multimodal AI assistant to support Indian farmers by bridging the information gap across the agriculture lifecycle.",
-"Built using LangGraph, Gemini (Vertex AI), Google Cloud Platform, and Firestore, enabling voice, image, and text input for dynamic advisory on crop selection, government schemes, market prices, and weather alerts.",
-"Deployed LLM-powered agentic architecture with task-specific agents.",
-"Integrated real-time geolocation, speech translation, plant disease detection, and market intelligence.",
-"Engineered a scheme recommendation engine with vector search to match farmers to relevant subsidies.",
-"Designed for scalability with Kubernetes, Firebase, and future integration with national agriculture APIs."
-    ],
-    link: "https://github.com/purvi1508/AgriAssist"
-  },
-  {
-    name: "Safeguard Toolkit (Open-Source Python Security Scanner)",
-    desc: [
-"Designed and developed an open-source security analysis toolkit using Python, demonstrating modular design, file system operations, and static code analysis.",
-"Built custom scanners like PermissionsChecker (auditing directory and file permissions) and EvalExecScanner",
-"(detecting insecure use of eval() and exec()), showcasing expertise in secure coding practices.",
-"Packaged and distributed via PyPI with well-documented architecture to support future extensibility.",
-"Emphasizes strengths in Python packaging, automation, and secure coding, suitable for integration into CI/CD pipelines for pre-deployment risk checks.",
-"Install the latest release from PyPI: pip install safeguard toolkit."
-    ],
-    link: "https://github.com/purvi1508/Safeguard"
-  },
-  {
-    name: "Physics-Informed Neural Networks for Nonlinear Cantilever Beam Analysis",
-    desc: [
-"Leveraged PyTorch to implement Physics-Informed Neural Networks (PINNs) for analyzing a nonlinear cantilever beam system.",
-"Compared results from the neural network model with finite element analysis, improving understanding and accuracy of the beam's behavior.",
-"Conducted comparative study of Galerkin Method vs PINN for solving the nonlinear exact equation of deflection of an elastic beam.",
-    ],
-    link: "https://drive.google.com/file/d/1Te4KKJRomf0d3niqzYLglT0MFMBjtjDr/view"
-  },
-{
-  name: "Age and Gender Detection System",
-  desc: [
-    "Dataset: UTKFace dataset (archive.zip)",
-    "Input: Grayscale images, 128x128 pixels",
-    "CNN Layers: Conv2D with filters (64, 128, 256) + MaxPooling",
-    "Dense + Dropout: 512 units (ReLU) with dropout for regularization",
-    "Transformer Block: Multi-Head Attention (7 heads) + LayerNorm",
-    "BiLSTM Block: 64 units + GlobalMaxPooling1D for temporal dependencies",
-    "Output: Dual dense layers for gender & age prediction",
-    "Real-time detection via webcam stream using Haar cascade",
-    "Predictions: Bounding box overlay with live age & gender labels"
-  ],
-  link: "https://github.com/purvi1508/Age-and-gender-detection-system-"
-},
-{
-  name: "Amazon Product Scraper",
-  desc: [
-    "Scrapes Amazon product pages with a flexible base URL",
-    "Extracts key details: product name, price, reviews, and ratings",
-    "Works dynamically with user-provided product URLs",
-    "Crawler navigates through product pages automatically",
-  ],
-  link: "https://github.com/purvi1508/-Amazon_Product_Scraper"
-},
-{
-  name: "Multimodal Therapy Assistant",
-  desc: [
-    "Scalable multi-agent system supporting emotional wellness",
-    "Inputs: text, voice, and facial emotion detection",
-    "Central Supervisor Agent: orchestrates routing & ensures safety",
-    "Perception Agent: processes voice tone, face emotion, and text input",
-    "Cognitive Insight Agent: detects intent, distortions, toxicity, risks",
-    "Therapeutic Planner Agent: generates CBT/DBT-based supportive responses",
-    "Long-Term Memory Agent: tracks emotional evolution & stores session history",
-    "Tools Used: audio transcription, emotion detection, intent detection, risk escalation, tone-adaptive rewriting",
-    "Output Pipeline: combines therapeutic response + metadata for personalization"
-  ],
-  link: "https://github.com/purvi1508/Multimodal-Therapy-Assistant"
-}
-];
-
-
-const helix = document.getElementById("helix");
-const panel = document.getElementById("project-panel");
-const titleEl = document.getElementById("project-title");
-const descEl = document.getElementById("project-desc");
-const linkEl = document.getElementById("project-link");
-const closeBtn = document.getElementById("close-panel");
-
-// Generate nodes
-projects.forEach((p, i) => {
-  const node = document.createElement("div");
-  node.className = "helix-node";
-  node.innerHTML = `<span>${p.name}</span>`;
-  node.dataset.index = i;
-  helix.appendChild(node);
-});
-
-// Animate nodes (DNA spiral) - responsive radius/spacing based on container width
-function renderHelix() {
-  const nodes = document.querySelectorAll(".helix-node");
-  const scrollY = window.scrollY * 0.002;
-  const isMobile = window.innerWidth < 768;
-  const nodeHalf = isMobile ? 50 : 70;
-  const spiralRadius = isMobile ? Math.max(40, helix.clientWidth / 2 - nodeHalf - 10) : 220;
-  const verticalStep = isMobile ? 140 : 200;
-  const centerX = helix.clientWidth / 2 - nodeHalf;
-
-  nodes.forEach((node, i) => {
-    const angle = scrollY + i * 0.8;
-    const x = Math.cos(angle) * spiralRadius + centerX;
-    const y = i * verticalStep;
-    const z = Math.sin(angle) * 100;
-
-    node.style.top = y + "px";
-    node.style.left = Math.max(0, x) + "px";
-    node.style.zIndex = Math.floor(1000 + z);
-    node.style.opacity = 0.7 + (z/200);
-  });
-  requestAnimationFrame(renderHelix);
-}
-renderHelix();
-
-function openProjectPanel(project) {
-  // Set project title
-  document.getElementById("project-title").textContent = project.name;
-
-  // Set GitHub/document link
-  document.getElementById("project-link").href = project.link;
-
-  // Render description as list
-  const descContainer = document.getElementById("project-desc");
-  descContainer.innerHTML = ""; // clear previous content
-
-  const ul = document.createElement("ul");
-  ul.className = "list-disc list-inside space-y-1 text-left text-sm text-gray-300"; // Tailwind classes for bullets
-
-  project.desc.forEach(item => {
-    const li = document.createElement("li");
-    li.className = "ml-2"; // small indent for bullets
-    li.textContent = item;
-    ul.appendChild(li);
+  navToggle.addEventListener('click', () => {
+    const isExpanded = navToggle.getAttribute('aria-expanded') === 'true';
+    navToggle.setAttribute('aria-expanded', !isExpanded);
+    navToggle.classList.toggle('open');
+    navLinks.classList.toggle('open');
   });
 
-  descContainer.appendChild(ul);
+  // Close nav on click
+  document.querySelectorAll('#nav-links a').forEach(link => {
+    link.addEventListener('click', () => {
+      navToggle.setAttribute('aria-expanded', 'false');
+      navToggle.classList.remove('open');
+      navLinks.classList.remove('open');
+    });
+  });
 
-  // Show panel
-  document.getElementById("project-panel").classList.remove("hidden");
-}
+  /* ---------- STICKY NAVIGATION HEADER ---------- */
+  const nav = document.getElementById('nav');
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 50) {
+      nav.classList.add('scrolled');
+    } else {
+      nav.classList.remove('scrolled');
+    }
+  });
 
+  /* ---------- SCROLL PROGRESS INDICATOR ---------- */
+  const scrollProgress = document.getElementById('scroll-progress');
+  window.addEventListener('scroll', () => {
+    const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const progress = totalHeight > 0 ? (window.scrollY / totalHeight) * 100 : 0;
+    scrollProgress.style.width = progress + '%';
+  });
 
-// Close panel button
-document.getElementById("close-panel").addEventListener("click", () => {
-  document.getElementById("project-panel").classList.add("hidden");
-});
-// Node click → open project panel
-helix.addEventListener("click", (e) => {
-  const node = e.target.closest(".helix-node");
-  if (node) {
-    const p = projects[node.dataset.index];
-    titleEl.textContent = p.name;
-    descEl.textContent = p.desc;
-    linkEl.href = p.link;
-    panel.classList.remove("hidden");
+  /* ---------- THREE.JS: "TRUSS TO NETWORK" SIMULATION ---------- */
+  let scene, camera, renderer, nodes = [], pointCloud, morphRatio = 0;
+  let blueprintGrid, impulseParticles;
+  let trussLines, networkLines; // Two separate line objects for clean cross-dissolving transitions
+  const canvas = document.getElementById('bg-canvas');
+  const heroPin = document.getElementById('hero-pin');
+  const stateLabel = document.getElementById('stateLabel');
+
+  const nodeCount = 100;
+
+  // Track cursor offsets for dynamic parallax interaction
+  let mouseX = 0, mouseY = 0;
+  let targetX = 0, targetY = 0;
+
+  window.addEventListener('mousemove', (e) => {
+    mouseX = (e.clientX - window.innerWidth / 2) * 0.05;
+    mouseY = (e.clientY - window.innerHeight / 2) * 0.05;
+  });
+
+  window.addEventListener('touchmove', (e) => {
+    if(e.touches.length > 0) {
+      mouseX = (e.touches[0].clientX - window.innerWidth / 2) * 0.05;
+      mouseY = (e.touches[0].clientY - window.innerHeight / 2) * 0.05;
+    }
+  });
+
+  function initThree() {
+    scene = new THREE.Scene();
+    camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 1000);
+    camera.position.set(0, 10, 200);
+
+    renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    resizeThree();
+
+    const geometry = new THREE.BufferGeometry();
+    const positions = new Float32Array(nodeCount * 3);
+    const colors = new Float32Array(nodeCount * 3);
+
+    const coralColor = new THREE.Color('#ff6b4a');
+    const blueColor = new THREE.Color('#5fd4d0');
+
+    /* Setup distinct mathematical coordinate states for nodes:
+       1. Space Truss State: 4 parallel chords spanning lengthwise along X axis (compacted and pushed right)
+       2. Layered Deep Neural Network State: 5 Feedforward layered rings of computation
+    */
+    for (let i = 0; i < nodeCount; i++) {
+      // Compacted truss coordinates spanning nicely to support desktop sideload splits
+      const chordIndex = Math.floor(i / 25); 
+      const step = i % 25;
+      const tx = (step * 8) - 96; // Squeezed lengthwise to stay perfectly on the right side
+      
+      let ty = 0, tz = 0;
+      if (chordIndex === 0) { ty = 26; tz = -10; }  // was -14
+      else if (chordIndex === 1) { ty = 26; tz = 10; }  // was -14
+      else if (chordIndex === 2) { ty = 54; tz = -10; }  // was 14
+      else if (chordIndex === 3) { ty = 54; tz = 10; }  // was 14
+
+      if (chordIndex >= 2) {
+        ty += Math.sin(step * Math.PI) * 1.5;
+      }
+
+      // Compacted Neural Network Ring positions
+      let nx = 0, ny = 0, nz = 0;
+      let layer = 0;
+      let angle = 0;
+      let radius = 24;
+
+      if (i < 10) { // Layer 1 (Input): 10 nodes
+        layer = 0; nx = -65; angle = (i / 10) * Math.PI * 2; radius = 12;
+      } else if (i < 35) { // Layer 2 (Hidden 1): 25 nodes
+        layer = 1; nx = -30; angle = ((i - 10) / 25) * Math.PI * 2; radius = 24;
+      } else if (i < 65) { // Layer 3 (Hidden 2): 30 nodes
+        layer = 2; nx = 5; angle = ((i - 35) / 30) * Math.PI * 2; radius = 30;
+      } else if (i < 90) { // Layer 4 (Hidden 3): 25 nodes
+        layer = 3; nx = 40; angle = ((i - 65) / 25) * Math.PI * 2; radius = 22;
+      } else { // Layer 5 (Output): 10 nodes
+        layer = 4; nx = 70; angle = ((i - 90) / 10) * Math.PI * 2; radius = 10;
+      }
+      
+      ny = Math.sin(angle) * radius;
+      nz = Math.cos(angle) * radius;
+
+      nodes.push({
+        truss: new THREE.Vector3(tx, ty, tz),
+        network: new THREE.Vector3(nx, ny, nz),
+        current: new THREE.Vector3(tx, ty, tz),
+        layer: layer
+      });
+
+      positions[i * 3] = tx;
+      positions[i * 3 + 1] = ty;
+      positions[i * 3 + 2] = tz;
+
+      colors[i * 3] = blueColor.r;
+      colors[i * 3 + 1] = blueColor.g;
+      colors[i * 3 + 2] = blueColor.b;
+    }
+
+    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+    const material = new THREE.PointsMaterial({
+      size: 2.2,
+      vertexColors: true,
+      transparent: true,
+      opacity: 0.85
+    });
+
+    pointCloud = new THREE.Points(geometry, material);
+    scene.add(pointCloud);
+
+    // 1. Structural Truss connection paths
+    const trussLineMat = new THREE.LineBasicMaterial({
+      color: 0x5fd4d0,
+      transparent: true,
+      opacity: 0.2
+    });
+    const trussLineIndices = [];
+    for (let step = 0; step < 24; step++) {
+      // Connect longitudinal chords
+      trussLineIndices.push(step, step + 1); // Bottom left
+      trussLineIndices.push(step + 25, step + 26); // Bottom right
+      trussLineIndices.push(step + 50, step + 51); // Top left
+      trussLineIndices.push(step + 75, step + 76); // Top right
+
+      // Vertical struts
+      trussLineIndices.push(step, step + 50);
+      trussLineIndices.push(step + 25, step + 75);
+
+      // Horizontal struts
+      trussLineIndices.push(step, step + 25);
+      trussLineIndices.push(step + 50, step + 75);
+
+      // Stability Warren truss diagonals
+      trussLineIndices.push(step, step + 51);
+      trussLineIndices.push(step + 50, step + 1);
+      trussLineIndices.push(step + 25, step + 76);
+      trussLineIndices.push(step + 75, step + 26);
+    }
+
+    const trussLineGeom = new THREE.BufferGeometry();
+    trussLineGeom.setAttribute('position', new THREE.BufferAttribute(positions.slice(), 3));
+    trussLineGeom.setIndex(trussLineIndices);
+    trussLines = new THREE.LineSegments(trussLineGeom, trussLineMat);
+    scene.add(trussLines);
+
+    // 2. Neural Net Feedforward synapse connection paths
+    const netLineMat = new THREE.LineBasicMaterial({
+      color: 0xff6b4a,
+      transparent: true,
+      opacity: 0.0 // Dissolved at init
+    });
+    const netLineIndices = [];
+    for (let i = 0; i < nodeCount; i++) {
+      for (let j = i + 1; j < nodeCount; j++) {
+        const nA = nodes[i];
+        const nB = nodes[j];
+        if (Math.abs(nA.layer - nB.layer) === 1 && (i + j) % 6 === 0) {
+          netLineIndices.push(i, j);
+        }
+      }
+    }
+
+    const netLineGeom = new THREE.BufferGeometry();
+    netLineGeom.setAttribute('position', new THREE.BufferAttribute(positions.slice(), 3));
+    netLineGeom.setIndex(netLineIndices);
+    networkLines = new THREE.LineSegments(netLineGeom, netLineMat);
+    scene.add(networkLines);
+
+    // Grid Floor
+    const gridHelper = new THREE.GridHelper(300, 24, 0x5fd4d0, 0x191c26);
+    gridHelper.position.y = -35;
+    gridHelper.material.opacity = 0.15;
+    gridHelper.material.transparent = true;
+    blueprintGrid = gridHelper;
+    scene.add(blueprintGrid);
+
+    // Kinetic Signal Pulses
+    const particleCount = 20;
+    const impulseGeom = new THREE.BufferGeometry();
+    const impulsePos = new Float32Array(particleCount * 3);
+    const impulseColors = new Float32Array(particleCount * 3);
+    
+    impulseParticles = [];
+    for(let k = 0; k < particleCount; k++) {
+      const pIndex = Math.floor(Math.random() * nodeCount);
+      impulseParticles.push({
+        currentNode: pIndex,
+        nextNode: (pIndex + 1) % nodeCount,
+        progress: Math.random(),
+        speed: 0.008 + Math.random() * 0.012
+      });
+      impulsePos[k*3] = positions[pIndex*3];
+      impulsePos[k*3+1] = positions[pIndex*3+1];
+      impulsePos[k*3+2] = positions[pIndex*3+2];
+
+      impulseColors[k*3] = coralColor.r;
+      impulseColors[k*3+1] = coralColor.g;
+      impulseColors[k*3+2] = coralColor.b;
+    }
+
+    impulseGeom.setAttribute('position', new THREE.BufferAttribute(impulsePos, 3));
+    impulseGeom.setAttribute('color', new THREE.BufferAttribute(impulseColors, 3));
+    
+    const impulseMat = new THREE.PointsMaterial({
+      size: 5.0,
+      vertexColors: true,
+      transparent: true,
+      opacity: 0.95
+    });
+
+    const impulsePoints = new THREE.Points(impulseGeom, impulseMat);
+    scene.add(impulsePoints);
+
+    animate();
   }
-});
 
-// Close button
-closeBtn.addEventListener("click", () => {
-  panel.classList.add("hidden");
-});
-
-// Auto-close as soon as the user scrolls up or down while the panel is open
-window.addEventListener("scroll", () => {
-  if (!panel.classList.contains("hidden")) {
-    panel.classList.add("hidden");
+  function resizeThree() {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
   }
-});
-    </script>
-</body></html>
+
+  function animate() {
+    requestAnimationFrame(animate);
+
+    // Guard scroll morph calculations from NaN division bugs
+    const rect = heroPin.getBoundingClientRect();
+    const denom = rect.height - window.innerHeight;
+    let scrollProgress = 0;
+    if (denom > 0) {
+      scrollProgress = -rect.top / denom;
+    }
+    
+    let targetMorph = scrollProgress;
+    if (isNaN(targetMorph) || !isFinite(targetMorph)) {
+      targetMorph = 0;
+    }
+    targetMorph = Math.max(0, Math.min(1, targetMorph));
+    
+    // Smooth morph coordinate transition
+    if (isNaN(morphRatio) || !isFinite(morphRatio)) {
+      morphRatio = 0;
+    }
+    morphRatio += (targetMorph - morphRatio) * 0.08;
+    if (isNaN(morphRatio)) {
+      morphRatio = 0;
+    }
+
+    // Dynamic HUD readout metrics
+    const hudPhase = document.getElementById('hudPhase');
+    const hudLoss = document.getElementById('hudLoss');
+    const hudSyn = document.getElementById('hudSyn');
+    const hudStrain = document.getElementById('hudStrain');
+    const hudDof = document.getElementById('hudDof');
+
+    if (morphRatio < 0.25) {
+      stateLabel.innerHTML = 'LOAD ANALYSIS <span class="a">◆</span> 3D SPACE TRUSS';
+      hudPhase.textContent = "3D SPACE TRUSS";
+      hudLoss.textContent = "N/A (STATIC)";
+      hudSyn.textContent = "INACTIVE";
+      hudStrain.textContent = (0.012 + Math.sin(Date.now()*0.002)*0.005).toFixed(3) + "%";
+      hudDof.textContent = "600 DOF (STABLE)";
+    } else if (morphRatio > 0.75) {
+      stateLabel.innerHTML = 'DEEP NET <span class="b">◆</span> AI NEURAL LAYER';
+      hudPhase.textContent = "DEEP NEURAL NET";
+      hudLoss.textContent = (0.042 + Math.cos(Date.now()*0.001)*0.015).toFixed(4);
+      hudSyn.textContent = "ACTIVE (98.4%)";
+      hudStrain.textContent = "N/A (COMPUTATIONAL)";
+      hudDof.textContent = "8,450 WEIGHTS";
+    } else {
+      stateLabel.innerHTML = 'TRANSITIONING <span class="a">◆</span> BENDING TOPOLOGY';
+      hudPhase.textContent = "MORPHING STATE";
+      hudLoss.textContent = "COMPUTING...";
+      hudSyn.textContent = "CONNECTING...";
+      hudStrain.textContent = "DYNAMIC STRAIN";
+      hudDof.textContent = "N-DIMENSIONAL";
+    }
+
+    // Smoothly dissolve physical structural lines while synaptic weights light up
+    trussLines.material.opacity = 0.20 * (1.0 - morphRatio);
+    networkLines.material.opacity = 0.25 * morphRatio;
+
+    const positions = pointCloud.geometry.attributes.position.array;
+    const trussLinePos = trussLines.geometry.attributes.position.array;
+    const netLinePos = networkLines.geometry.attributes.position.array;
+    const colors = pointCloud.geometry.attributes.color.array;
+
+    const coralColor = new THREE.Color('#ff6b4a');
+    const blueColor = new THREE.Color('#5fd4d0');
+
+    // Morph coordinates across physical and deep neural network positions
+    for (let i = 0; i < nodes.length; i++) {
+      const node = nodes[i];
+      node.current.lerpVectors(node.truss, node.network, morphRatio);
+
+      // Add gentle dynamic ambient vibration to nodes
+      const time = Date.now() * 0.0008;
+      positions[i * 3] = node.current.x + Math.sin(time + i) * (0.6 * (1.0 - morphRatio));
+      positions[i * 3 + 1] = node.current.y + Math.cos(time + i) * (0.6 * (1.0 - morphRatio));
+      positions[i * 3 + 2] = node.current.z + Math.sin(time * 0.5 + i) * (0.3 * (1.0 - morphRatio));
+
+      // Push mapped coordinate states onto line geometry paths
+      trussLinePos[i * 3] = positions[i * 3];
+      trussLinePos[i * 3 + 1] = positions[i * 3 + 1];
+      trussLinePos[i * 3 + 2] = positions[i * 3 + 2];
+
+      netLinePos[i * 3] = positions[i * 3];
+      netLinePos[i * 3 + 1] = positions[i * 3 + 1];
+      netLinePos[i * 3 + 2] = positions[i * 3 + 2];
+
+      // Interpolate vertex coloring gradients
+      const mixedColor = blueColor.clone().lerp(coralColor, morphRatio);
+      colors[i * 3] = mixedColor.r;
+      colors[i * 3 + 1] = mixedColor.g;
+      colors[i * 3 + 2] = mixedColor.b;
+    }
+
+    pointCloud.geometry.attributes.position.needsUpdate = true;
+    pointCloud.geometry.attributes.color.needsUpdate = true;
+    trussLines.geometry.attributes.position.needsUpdate = true;
+    networkLines.geometry.attributes.position.needsUpdate = true;
+
+    // Blueprint grid sliding effect
+    if(blueprintGrid) {
+      blueprintGrid.position.z = (Date.now() * 0.015) % 25 - 12.5;
+      blueprintGrid.material.opacity = (0.15 * (1.0 - morphRatio));
+    }
+
+    // Kinetic Forward-Propagating stress / synaptic activation signal pulses
+    const impulsePoints = scene.children[4]; 
+    if(impulsePoints) {
+      const impPositions = impulsePoints.geometry.attributes.position.array;
+      for(let k = 0; k < impulseParticles.length; k++) {
+        const pulse = impulseParticles[k];
+        pulse.progress += pulse.speed;
+        if(pulse.progress >= 1.0) {
+          pulse.progress = 0;
+          pulse.currentNode = pulse.nextNode;
+          
+          if (morphRatio > 0.5) {
+            // Neural feedforward sweep (Layer 0 to Layer 4 propagation)
+            const currentLayer = nodes[pulse.currentNode].layer;
+            const nextLayer = (currentLayer + 1) % 5;
+            
+            // Randomly pick a node on the sequential next layer
+            const LayerNodes = [];
+            for (let idx = 0; idx < nodeCount; idx++) {
+              if (nodes[idx].layer === nextLayer) {
+                LayerNodes.push(idx);
+              }
+            }
+            pulse.nextNode = LayerNodes.length > 0 ? LayerNodes[Math.floor(Math.random() * LayerNodes.length)] : (pulse.currentNode + 1) % nodeCount;
+          } else {
+            // Structural stress paths
+            pulse.nextNode = (pulse.currentNode + Math.floor(1 + Math.random()*5)) % nodeCount;
+          }
+        }
+
+        const currNode = nodes[pulse.currentNode].current;
+        const targetNode = nodes[pulse.nextNode].current;
+        
+        const px = currNode.x + (targetNode.x - currNode.x) * pulse.progress;
+        const py = currNode.y + (targetNode.y - currNode.y) * pulse.progress;
+        const pz = currNode.z + (targetNode.z - currNode.z) * pulse.progress;
+
+        impPositions[k*3] = px;
+        impPositions[k*3+1] = py;
+        impPositions[k*3+2] = pz;
+      }
+      impulsePoints.geometry.attributes.position.needsUpdate = true;
+    }
+
+    // CRITICAL FIX: Calculate sideloading X-offset depending on screen size to prevent text overlaps
+    const isDesktop = window.innerWidth > 1024;
+    const xOffset = isDesktop ? -40 : 0; // Pushes 3D components 35 units to the right, avoiding text overlap entirely!
+
+    targetX += (mouseX - targetX) * 0.005;
+    targetY += (mouseY - targetY) * 0.005;
+
+    camera.position.x = xOffset + targetX * 0.55;
+    camera.position.y = 50 - targetY * 0.6;
+    camera.lookAt(xOffset, 0, 0); // Keep focused around shifted space coordinates
+
+    renderer.render(scene, camera);
+  }
+
+  window.addEventListener('resize', resizeThree);
+  window.addEventListener('load', initThree);
+
+  /* ---------- STRUCTURAL DRAFTING PAD ---------- */
+  const padCanvas = document.getElementById('padCanvas');
+  const ctx = padCanvas.getContext('2d');
+  const container = document.getElementById('canvasContainer');
+  const cursor = document.getElementById('customCursor');
+  const hint = document.getElementById('padHint');
+
+  let isDrawing = false;
+  let drawMode = 'pencil'; // pencil, truss, eraser
+  let activeColor = '#ff6b4a';
+  let lastX = 0, lastY = 0;
+  let brushSize = 2.5;
+
+  const trussGridSize = 28;
+
+  function resizeCanvas() {
+    padCanvas.width = container.clientWidth;
+    padCanvas.height = container.clientHeight;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+  }
+
+  window.addEventListener('load', resizeCanvas);
+  window.addEventListener('resize', resizeCanvas);
+
+  function getPos(e) {
+    const rect = padCanvas.getBoundingClientRect();
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    return {
+      x: clientX - rect.left,
+      y: clientY - rect.top
+    };
+  }
+
+  function hideHint() {
+    hint.classList.add('hidden');
+  }
+
+  container.addEventListener('mousemove', (e) => {
+    const rect = container.getBoundingClientRect();
+    cursor.style.display = 'block';
+    cursor.style.left = `${e.clientX - rect.left}px`;
+    cursor.style.top = `${e.clientY - rect.top}px`;
+    cursor.style.width = `${brushSize * 3.5}px`;
+    cursor.style.height = `${brushSize * 3.5}px`;
+  });
+
+  container.addEventListener('mouseleave', () => {
+    cursor.style.display = 'none';
+  });
+
+  function startDraw(e) {
+    isDrawing = true;
+    hideHint();
+    const pos = getPos(e);
+    lastX = pos.x;
+    lastY = pos.y;
+    
+    if (drawMode === 'truss') {
+      lastX = Math.round(pos.x / trussGridSize) * trussGridSize;
+      lastY = Math.round(pos.y / trussGridSize) * trussGridSize;
+    }
+    
+    ctx.beginPath();
+    ctx.moveTo(lastX, lastY);
+  }
+
+  function draw(e) {
+    if (!isDrawing) return;
+    e.preventDefault();
+    const pos = getPos(e);
+    let targetX = pos.x;
+    let targetY = pos.y;
+
+    ctx.lineWidth = drawMode === 'eraser' ? 18 : brushSize;
+    ctx.strokeStyle = drawMode === 'eraser' ? '#f2ede1' : activeColor;
+
+    if (drawMode === 'pencil' || drawMode === 'eraser') {
+      ctx.beginPath();
+      ctx.moveTo(lastX, lastY);
+      ctx.lineTo(targetX, targetY);
+      ctx.stroke();
+      lastX = targetX;
+      lastY = targetY;
+    } else if (drawMode === 'truss') {
+      targetX = Math.round(pos.x / trussGridSize) * trussGridSize;
+      targetY = Math.round(pos.y / trussGridSize) * trussGridSize;
+
+      if (targetX !== lastX || targetY !== lastY) {
+        ctx.beginPath();
+        ctx.moveTo(lastX, lastY);
+        ctx.lineTo(targetX, targetY);
+        ctx.stroke();
+
+        ctx.fillStyle = '#12141c';
+        ctx.beginPath();
+        ctx.arc(lastX, lastY, 4, 0, Math.PI * 2);
+        ctx.arc(targetX, targetY, 4, 0, Math.PI * 2);
+        ctx.fill();
+
+        lastX = targetX;
+        lastY = targetY;
+      }
+    }
+  }
+
+  function stopDraw() {
+    isDrawing = false;
+    ctx.closePath();
+  }
+
+  padCanvas.addEventListener('mousedown', startDraw);
+  padCanvas.addEventListener('mousemove', draw);
+  padCanvas.addEventListener('mouseup', stopDraw);
+
+  padCanvas.addEventListener('touchstart', (e) => { startDraw(e); draw(e); });
+  padCanvas.addEventListener('touchmove', draw);
+  padCanvas.addEventListener('touchend', stopDraw);
+
+  document.querySelectorAll('.swatch').forEach(sw => {
+    sw.addEventListener('click', (e) => {
+      document.querySelectorAll('.swatch').forEach(s => s.classList.remove('active'));
+      sw.classList.add('active');
+      activeColor = sw.getAttribute('data-color');
+      if (drawMode === 'eraser') {
+        setDrawMode('pencil');
+      }
+    });
+  });
+
+  const customColorInput = document.getElementById('customColor');
+  customColorInput.addEventListener('input', (e) => {
+    document.querySelectorAll('.swatch').forEach(s => s.classList.remove('active'));
+    activeColor = e.target.value;
+    if (drawMode === 'eraser') {
+      setDrawMode('pencil');
+    }
+  });
+
+  const btnDraw = document.getElementById('btn-draw');
+  const btnTruss = document.getElementById('btn-truss');
+  const btnEraser = document.getElementById('btn-eraser');
+
+  function setDrawMode(mode) {
+    drawMode = mode;
+    btnDraw.classList.remove('active');
+    btnTruss.classList.remove('active');
+    btnEraser.classList.remove('active');
+
+    if (mode === 'pencil') btnDraw.classList.add('active');
+    if (mode === 'truss') btnTruss.classList.add('active');
+    if (mode === 'eraser') btnEraser.classList.add('active');
+  }
+
+  btnDraw.addEventListener('click', () => setDrawMode('pencil'));
+  btnTruss.addEventListener('click', () => setDrawMode('truss'));
+  btnEraser.addEventListener('click', () => setDrawMode('eraser'));
+
+  document.getElementById('btn-clear').addEventListener('click', () => {
+    ctx.clearRect(0, 0, padCanvas.width, padCanvas.height);
+    hint.classList.remove('hidden');
+  });
+
+  document.getElementById('btn-download').addEventListener('click', () => {
+    const exportCanvas = document.createElement('canvas');
+    exportCanvas.width = padCanvas.width;
+    exportCanvas.height = padCanvas.height;
+    const exportCtx = exportCanvas.getContext('2d');
+
+    exportCtx.fillStyle = '#f2ede1';
+    exportCtx.fillRect(0, 0, exportCanvas.width, exportCanvas.height);
+
+    exportCtx.strokeStyle = 'rgba(58,90,120,0.14)';
+    exportCtx.lineWidth = 1;
+    for (let x = 0; x < exportCanvas.width; x += 28) {
+      exportCtx.beginPath();
+      exportCtx.moveTo(x, 0);
+      exportCtx.lineTo(x, exportCanvas.height);
+      exportCtx.stroke();
+    }
+    for (let y = 0; y < exportCanvas.height; y += 28) {
+      exportCtx.beginPath();
+      exportCtx.moveTo(0, y);
+      exportCtx.lineTo(exportCanvas.width, y);
+      exportCtx.stroke();
+    }
+
+    exportCtx.drawImage(padCanvas, 0, 0);
+
+    const link = document.createElement('a');
+    link.download = 'purvi_verma_structural_draft.png';
+    link.href = exportCanvas.toDataURL();
+    link.click();
+  });
+
+  /* ---------- STAGGERED REVEAL SCROLL INTERSECTION OBSERVER ---------- */
+  const revealElements = document.querySelectorAll('[data-reveal], [data-stagger]');
+  const observerOptions = {
+    threshold: 0.15,
+    rootMargin: '0px 0px -50px 0px'
+  };
+
+  const revealObserver = new IntersectionObserver((entries, observer) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('revealed');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, observerOptions);
+
+  revealElements.forEach(el => revealObserver.observe(el));
+
+  document.querySelectorAll('h2.head').forEach(el => {
+    el.setAttribute('data-reveal', '');
+    revealObserver.observe(el);
+  });
+
+  /* ---------- PROJECTS CARD 3D HOVER TILT EFFECTS ---------- */
+  const cards = document.querySelectorAll('.proj-card');
+  cards.forEach(card => {
+    card.addEventListener('mousemove', (e) => {
+      const rect = card.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+
+      card.style.setProperty('--mx', `${x}px`);
+      card.style.setProperty('--my', `${y}px`);
+
+      const xRot = -((y - rect.height / 2) / rect.height) * 8;
+      const yRot = ((x - rect.width / 2) / rect.width) * 8;
+      card.style.transform = `perspective(1000px) rotateX(${xRot}deg) rotateY(${yRot}deg) translateZ(5px)`;
+    });
+
+    card.addEventListener('mouseleave', () => {
+      card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) translateZ(0)';
+    });
+  });
+</script>
+</body>
+</html>
